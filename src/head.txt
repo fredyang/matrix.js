@@ -1,0 +1,11 @@
+/*!
+ * matrix JavaScript Library v@version
+ * http://semanticsworks.com/p/matrix-library.html
+ *
+ * Copyright 2011, Fred Yang
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://www.opensource.org/licenses/mit-license
+ * http://www.opensource.org/licenses/gpl-2.0
+ *
+ * Date: @date
+ */

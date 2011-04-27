@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8"/>
+	<title>release jquery ui dialog</title>
+
+	<link rel="stylesheet" href="css/demos.css">
+
+	<script src="../jquery.js"></script>
+	<script src="../src/matrix.core.js"></script>
+
+	<!-- core handler registration -->
+	<script src="../src/matrix.module.js"></script>
+	<script src="../src/matrix.js.js"></script>
+	<script src="../src/matrix.css.js"></script>
+
+	<!-- config file -->
+	<script src="js/matrix/matrix.config.js"></script>
+	<script src="js/matrix/matrix.app.js"></script>
+	<script>
+		$( function() {
+
+			$( "#loadapp" ).click( function () {
+
+				matrix.load( "hello.app", function ( content ) {
+					content.appendTo( "#app" );
+				} );
+			} );
+
+			$( "#releaseapp" ).click( function () {
+				matrix.release( "hello.app", true );
+			} );
+		} );
+	</script>
+</head>
+<body>
+
+<div class="demo">
+	<h1>load and release an application, check your system memory usage before and after the click</h1>
+
+	<h1>
+		<a id="loadapp" href="#">load app</a> <a id="releaseapp" href="#">release app</a></h1>
+
+	<div id="app">
+
+	</div>
+</div>
+
+
+</body>
+</html>
+
+

@@ -1,0 +1,64 @@
+<script>
+	var start = new Date;
+</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8"/>
+	<title>pre load all dialog scripts</title>
+
+
+	<link rel="stylesheet" href="../css/demos.css"/>
+	<link rel="stylesheet" href="../js/jquery.ui/css/jquery.ui.redmond.css"/>
+
+	<script type="text/javascript" src="../../jquery.js"></script>
+
+	<script src="../js/jquery.ui/jquery.ui.core.min.js"></script>
+	<script src="../js/jquery.ui/jquery.ui.widget.min.js"></script>
+	<script src="../js/jquery.ui/jquery.ui.button.min.js"></script>
+	<script src="../js/jquery.ui/jquery.ui.draggable.min.js"></script>
+	<script src="../js/jquery.ui/jquery.ui.mouse.min.js"></script>
+	<script src="../js/jquery.ui/jquery.ui.position.min.js"></script>
+	<script src="../js/jquery.ui/jquery.ui.resizable.min.js"></script>
+	<script src="../js/jquery.ui/jquery.ui.dialog.min.js"></script>
+
+	<script>
+		$( function() {
+			var pageLoaded = (new Date);
+
+			$( "#linkDialog" ).one( "click", function() {
+				var link = $( this );
+				var startLoadDialog = new Date;
+				$( "#dialog" ).dialog();
+				var dialogLoaded = (new Date);
+				$( "#dialogLoadtime" ).text( "dialog load time " + (dialogLoaded - startLoadDialog) + "ms" );
+				link.remove();
+			} );
+
+			$( "#result" ).text( "page load time:" + (pageLoaded - start) + "ms" );
+
+		} );
+	</script>
+</head>
+<body>
+
+<div class="demo">
+	<h1>pre load all dialog scripts</h1>
+
+	<h1 id="result"></h1>
+
+	<h1 id="dialogLoadtime"></h1>
+
+	<h1><a id="linkDialog" href="preload-dialog.html#">Click for dialog!</a></h1>
+
+	<div id="dialog" title="Basic dialog" style="display:none;">
+		<p>This is the default dialog which is useful for displaying
+			information. The dialog window can be moved, resized and closed with
+			the 'x' icon.</p>
+	</div>
+
+</div>
+
+
+</body>
+</html>

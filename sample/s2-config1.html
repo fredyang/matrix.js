@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8"/>
+	<title>convention registration, in page registering dependencies</title>
+
+	<link rel="stylesheet" href="css/demos.css">
+
+	<script src="../jquery.js"></script>
+	<script src="../src/matrix.core.js"></script>
+
+	<script src="../src/matrix.module.js"></script>
+	<script src="../src/matrix.js.js"></script>
+	<script src="../src/matrix.css.js"></script>
+
+	<!--add resource handler-->
+	<script src="js/matrix/matrix.uijs.js"></script>
+	<script src="js/matrix/matrix.uicss.js"></script>
+	<script src="js/matrix/matrix.uitheme.js"></script>
+
+	<script>
+		$( function() {
+
+			matrix.baseUrl = "js/";
+
+			matrix.depend( "ui.theme.module", "redmond.uitheme" );//1
+			matrix.depend( "ui.css.module", "ui.core.uicss, ui.theme.module" )//1+2
+			matrix.depend( "sample2.module", "ui.css.module, dialog.uijs" );//1+2+3
+
+			matrix.load( "sample2.module", function () {
+				$( "#linkDialog" ).click( function() {
+					$( "<h1>hello</h1>" ).dialog();
+					return false;
+				} );
+
+				$( "#ddlTheme" ).change( function ( e ) {
+
+					matrix.depend( "ui.theme.module", this.value + ".uitheme" , true);
+
+				} );
+			} );
+
+		} );
+	</script>
+</head>
+<body>
+
+<div class="demo">
+	<h1>use matrix.boot.js and resource handler to config url/dependencies, resource hander
+	registered manually</h1>
+	<h1 id="result"></h1>
+
+	<h1 id="dialogLoadtime"></h1>
+
+
+	<h1><a id="linkDialog" href="#">Click for dialog!</a></h1>
+	<select id="ddlTheme">
+		<option>redmond</option>
+		<option>smoothness</option>
+	</select>
+
+	<div id="dialog" title="Basic dialog" style="display:none;">
+		<p>This is the default dialog which is useful for displaying
+			information. The dialog window can be moved, resized and closed with
+			the 'x' icon.</p>
+	</div>
+
+</div>
+
+
+</body>
+</html>
+
+

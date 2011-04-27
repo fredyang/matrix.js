@@ -1,0 +1,68 @@
+<script>
+	var start = new Date;
+</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8"/>
+	<title>on demand load</title>
+
+	<link rel="stylesheet" href="../css/demos.css">
+
+	<script type="text/javascript" src="../../jquery.js"></script>
+	<script type="text/javascript" src="../../src/matrix.core.js"></script>
+	<script type="text/javascript" src="../../src/matrix.module.js"></script>
+	<script type="text/javascript" src="../../src/matrix.js.js"></script>
+	<script type="text/javascript" src="../../src/matrix.css.js"></script>
+
+
+	<script src="../js/matrix/matrix.uijs.js"></script>
+	<script src="../js/matrix/matrix.uicss.js"></script>
+	<script src="../js/matrix/matrix.uitheme.js"></script>
+
+	<script type="text/javascript" src="../js/matrix/matrix.config.js"></script>
+
+	<script>
+		$( function() {
+			var pageLoaded = (new Date);
+
+			matrix.baseUrl = "../js/";
+
+			$( "#linkDialog" ).one( "click", function() {
+				var link = $( this );
+				var startLoadDialog = new Date;
+				matrix.load( "dialog.module", function () {
+					$( "#dialog" ).dialog();
+					var dialogLoaded = (new Date);
+					$( "#dialogLoadtime" ).text( "dialog load time " + (dialogLoaded - startLoadDialog) + "ms" );
+					link.remove();
+				} );
+			} );
+
+			$( "#result" ).text( "page load time:" + (pageLoaded - start) + "ms" );
+
+		} );
+	</script>
+</head>
+<body>
+
+<div class="demo">
+	<h1>on demand load</h1>
+
+	<h1 id="result"></h1>
+
+	<h1 id="dialogLoadtime"></h1>
+
+	<h1><a id="linkDialog" href="ondemandload.html#">Click for dialog!</a></h1>
+
+	<div id="dialog" title="Basic dialog" style="display:none">
+		<p>This is the default dialog which is useful for displaying
+			information. The dialog window can be moved, resized and closed with
+			the 'x' icon.</p>
+	</div>
+
+</div>
+
+
+</body>
+</html>
