@@ -41,14 +41,6 @@ jslint:
 	@@${node_engine} build/jslint-check.js
 
 
-
-node:
-	@@mkdir -p ${dist_dir}
-	@@${node_engine} ${build_dir}/uglify.js --unsafe ${out_js} > ${node_output}.tmp
-	@@${node_engine} ${build_dir}/post-compile.js ${node_output}.tmp > ${node_output}
-	@@rm -f ${node_output}.tmp	
-
-
 clean:
 	@@echo "Removing Distribution directory:" ${dist_dir}
 	@@rm -rf ${dist_dir}
