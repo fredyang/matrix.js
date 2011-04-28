@@ -67,7 +67,7 @@
 
 						//delete the promises associated with the resource
 						matrix.promises( singleResource, undefined );
-						
+
 						if ( (dependencies = matrix.depend( singleResource )) ) {
 							matrix.release( dependencies );
 						}
@@ -164,8 +164,14 @@
 					}
 				}
 				return;
-			} else if ( dependencies === undefined ) {
-				return _dependencies[resource];
+			}
+
+			if ( dependencies === undefined ) {
+				if ( arguments.length == 1 ) {
+					return _dependencies[resource];
+				} else {
+					delete _dependencies[resource];
+				}
 
 			} else {
 
@@ -176,9 +182,7 @@
 				if ( needToReload ) {
 					matrix.release( resource, true );
 					_dependencies[resource] = dependencies;
-					matrix.load( resource );
-					return dependencies;
-
+					return matrix.load( resource );
 				} else {
 					return (_dependencies[resource] = dependencies);
 				}
@@ -186,25 +190,18 @@
 
 		},
 
-		promises : buildAccess( _promises, matrix.url ),
-
 		//the url relative to the current location
 		baseUrl: "",
 
 		//the url relative to the baseUrl
 		homeUrl: "matrix/",
 
-		fullUrl: function ( relativeUrl ) {
-			dummyLink.href = relativeUrl;
-			return dummyLink.href;
-		},
-
 		loadHandlers: function ( names ) {
 			if ( typeof names === "string" ) {
 				names = split( names );
 			}
 			for ( var i = 0; i < names.length; i ++ ) {
-				names[i] = matrix.homeUrl + names[i];
+				names[i] = matrix.homeUrl + "matrix." + names[i] + ".js";
 			}
 			names = names.toString();
 			return matrix( names );
@@ -222,11 +219,11 @@
 			return (_handlers[name] = $.extend( {}, _handlers[baseName], extension ));
 		},
 
-		buildLoad: function ( isPreload, buildSourceEvaluator ) {
+		buildLoad: function ( checkPreload, buildSourceEvaluator ) {
 
 			var loadResource = function ( resource, url, deepParse ) {
 
-				matrix.log( "start ajax call to get resource @ " + url );
+				matrix.log( "fetching @ " + url );
 
 				$.get( url, null, null, "text" ).success( function ( sourceCode ) {
 					var evaluate = buildSourceEvaluator( resource, url, sourceCode );
@@ -237,7 +234,8 @@
 					if ( shouldDeepParse ) {
 						//set dependencies so that it can be used in release method
 						matrix.depend( resource, dependencies );
-						matrix.log( "loading dependencies of " + resource );
+
+						//matrix.log("\tloading dependencies in manifest of " + resource + ":" + dependencies);
 						matrix.load( dependencies, evaluate );
 
 					} else {
@@ -253,8 +251,7 @@
 					promise = defer.promise(),
 					url = matrix.url( resource );
 
-				var preLoad = isPreload( url );
-
+				var preLoad = checkPreload( url );
 				if ( preLoad ) {
 					promise.preload = true;
 					defer.resolve();
@@ -262,10 +259,11 @@
 				}
 
 				promise.defer = defer;
-
+				//matrix.log("prepare loading : " + resource)
 				dependencies = matrix.depend( resource );
 
 				if ( dependencies ) {
+					//matrix.log("\tloading registered dependencies : " + resource)
 					matrix.load( dependencies, function () {
 						loadResource( resource, url, false );
 					} );
@@ -287,37 +285,37 @@
 
 	} );
 
-	accessUrl = buildAccess( _urls, undefined, matrix.fullUrl );
-
-	//#debug
-	// members to configure matrix
+	// public utilities
 	$.extend( matrix, {
 
+		promises : buildAccess( _promises, matrix.url ),
+		
+		fullUrl: function ( relativeUrl ) {
+			dummyLink.href = relativeUrl;
+			return dummyLink.href;
+		},
+
 		debug: function () {
+			//#debug
 			this.log = function ( msg ) {
 				var console = window.console;
 				console && console.log && console.log( msg );
 			};
+			//#end_debug
+
 			this._dependencies = _dependencies;
 			this._urls = _urls;
 			this._promises = _promises;
 			this._handlers = _handlers;
-		},
-
-		reset: function () {
-			this.baseUrl = "";
-			this.homeUrl = "matrix/";
-			this.log = $.noop;
-			_dependencies = {};
-			_promises = {};
-			_urls = {};
-			_promises = {};
-		},
+		}
+		//#debug
+		,
 
 		log: $.noop
-
+		//#end_debug
 	} );
-	//#end_debug
+
+	accessUrl = buildAccess( _urls, undefined, matrix.fullUrl );
 
 	function split( refString ) {
 		var s = refString.replace( rspace, "" );
@@ -326,7 +324,6 @@
 
 	//resources is string
 	function loadParallel( resources ) {
-		matrix.log( "loadParallel " + resources );
 		var promises = [],
 			promise;
 		resources = split( resources );
@@ -346,7 +343,6 @@
 
 	//resources is array
 	function loadSeries( resources ) {
-		matrix.log( "loadSeries " + resources );
 		var promise,
 			i = 0,
 			temp,
@@ -384,8 +380,6 @@
 
 		if ( !promise ) {
 			handler = getHandler( resource );
-			matrix.log( "importing " + resource );
-
 			promise = handler.load( resource );
 
 			if ( !promise.preload ) {
