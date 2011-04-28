@@ -15,8 +15,8 @@ test( "url resolution", function () {
 
 } );
 
+
 asyncTest( "resource parallel load test", function() {
-	matrix.reset();
 	matrix.baseUrl = "unit/";
 
 	matrix.load( "d1.test, d2.test, d3.test" ).done( function () {
@@ -30,7 +30,6 @@ asyncTest( "resource parallel load test", function() {
 } );
 
 asyncTest( "resource serial load test", function () {
-	matrix.reset();
 	matrix.baseUrl = "unit/";
 
 	matrix.load( ["d1.test", "d2.test", "d3.test", "d4.test"], function () {
@@ -47,7 +46,6 @@ asyncTest( "resource serial load test", function () {
 } );
 
 asyncTest( "parallel resource registration/load test", function () {
-	matrix.reset();
 	matrix.baseUrl = "unit/";
 
 	matrix.depend( "d1.test", "d2.test, d3.test" );
@@ -55,12 +53,13 @@ asyncTest( "parallel resource registration/load test", function () {
 	matrix.load( "d1.test", function () {
 		ok( test.d1 && test.d2 && test.d3, "parallel dependencies is resolved according to registration" );
 		matrix.release( "d1.test, d2.test, d3.test" );
+		matrix.depend( "d1.test", undefined );
 		start();
 	} );
 } );
 
 asyncTest( "serail resource dependency test", function () {
-	matrix.reset();
+	matrix.baseUrl = "unit/";
 	matrix.depend( "d3.test", ["d1.test", "d2.test"] );
 
 	deepEqual( matrix.depend( "d3.test" ), ["d1.test", "d2.test"], "dependencies register successfully" )
@@ -74,7 +73,6 @@ asyncTest( "serail resource dependency test", function () {
 } );
 
 test( "reference count test", function () {
-	matrix.reset();
 	matrix.load( "a.module" );
 	ok( matrix._promises["a.module"], "after loaded a promise is added" );
 	matrix.release( "a.module" );
@@ -113,7 +111,6 @@ test( "reference count test", function () {
 module( "test js handler" );
 
 asyncTest( "test default load by baseUrl and release method creation", function() {
-	matrix.reset();
 	matrix.baseUrl = "unit/"
 	matrix.load( "depend1.js" ).done( function ( data ) {
 		ok( window.depend1, "can solve depend1.js accoding to baseUrl" );
@@ -124,7 +121,6 @@ asyncTest( "test default load by baseUrl and release method creation", function(
 } );
 
 asyncTest( "can resolve/release multiple independent reference", function() {
-	matrix.reset();
 	matrix.baseUrl = "unit/";
 	matrix.load( "depend1.js, depend2.js, depend3.js" ).done( function ( data ) {
 		ok( window.depend1 && window.depend2 && window.depend3, "depend1 depend2 and depend3 are all resolved" );
@@ -136,7 +132,6 @@ asyncTest( "can resolve/release multiple independent reference", function() {
 
 asyncTest( "test programmatic dependency registration", function() {
 
-	matrix.reset();
 	matrix.baseUrl = "unit/";
 
 	matrix.depend( "depend1.js", "depend2.js" );
@@ -154,7 +149,6 @@ asyncTest( "test programmatic dependency registration", function() {
 
 test( "test static linked script", function () {
 
-	matrix.reset();
 	matrix.baseUrl = "unit/"
 	matrix.load( "depend5.js" );
 	var url = matrix.url( "depend5.js" );
@@ -166,7 +160,6 @@ test( "test static linked script", function () {
 
 asyncTest( "test double reference to resource", function() {
 
-	matrix.reset();
 	matrix.baseUrl = "unit/"
 
 	ok( !window.depend1, "it has been released" );
@@ -190,7 +183,6 @@ asyncTest( "test double reference to resource", function() {
 } );
 
 asyncTest( "javascript release test", function () {
-	matrix.reset();
 	matrix.baseUrl = "unit/"
 
 	ok( !window.depend1, "depend1 initially is undefined" );
@@ -211,14 +203,14 @@ asyncTest( "javascript release test", function () {
 		ok( !window.depend3, "depend3 has been deleted" );
 
 		matrix.depend( {
-			"depend2.js" : null,
-			"depend3.js" : null
+			"depend2.js" : undefined,
+			"depend3.js" : undefined
 		} );
 	} );
 } );
 
 asyncTest( "javascript dependencies registration test (programmatic and manifest)", function () {
-	matrix.reset();
+
 	matrix.baseUrl = "unit/";
 
 	matrix.depend( {
@@ -232,11 +224,16 @@ asyncTest( "javascript dependencies registration test (programmatic and manifest
 		ok( depend1 && depend2 && depend3 && depend4, "depend1/2/3/4 are all resolved, because programmatic and manifest registration work together" );
 		matrix.release( "depend4.js" );
 		ok( !window.depend1 && !window.depend2 && !window.depend3 && !window.depend4, "depend1/2/3/4 are all released, because programmatic and manifest registration work together" );
+		matrix.depend( {
+			"depend2.js" : undefined,
+			"depend3.js" : undefined,
+			"depend4.js" : undefined
+		} );
+
 	} );
 } );
 
 asyncTest( "serialize resolving test", function () {
-	matrix.reset();
 	matrix.baseUrl = "unit/";
 
 	ok( !window.depend1 && !window.depend2 && !window.depend3, "depend1/2/3 initially are not defined" );
@@ -248,10 +245,11 @@ asyncTest( "serialize resolving test", function () {
 		start();
 	} );
 } );
+
 module( "test css handler" );
 
 asyncTest( "css load and release test", function () {
-	matrix.reset();
+
 	matrix.baseUrl = "unit/";
 
 	var _color = $( "#testcss" ).css( "color" );
@@ -274,7 +272,6 @@ asyncTest( "css load and release test", function () {
 
 asyncTest( "css dependencies test", function () {
 
-	matrix.reset();
 	matrix.baseUrl = "unit/";
 
 	var _color = $( "#testcss" ).css( "color" );
