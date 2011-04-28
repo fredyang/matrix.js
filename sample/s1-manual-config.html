@@ -48,12 +48,12 @@
 				"ui.mouse.js": "ui.widget.js",
 				"ui.position.js":null,
 				"ui.resizable.js":"ui.resizable.css, ui.core.js, ui.mouse.js, ui.widget.js",
-				"sample1.module" : "ui.core.css, ui.theme.module, ui.dialog.js",
-				"ui.theme.module" : "ui.redmond.css"
+				"ui.theme.module" : "ui.redmond.css",
+				"dialog.module" : "ui.core.css, ui.theme.module, ui.dialog.js"
 			} );
 
 			//matrix.load( "ui.core.css, ui.redmond.css, ui.dialog.js", function () {
-			matrix.load( "sample1.module", function () {
+			matrix.load( "dialog.module", function () {
 				$( "#linkDialog" ).click( function() {
 					$( "<h1>hello</h1>" ).dialog();
 					return false;
@@ -61,7 +61,7 @@
 
 				$( "#ddlTheme" ).change( function ( e ) {
 					//"ui.redmond.css"
-					matrix.depend( "ui.theme.module", "ui." + this.value + ".css" , true );
+					matrix.depend( "ui.theme.module", "ui." + this.value + ".css", true );
 				} );
 			} );
 
