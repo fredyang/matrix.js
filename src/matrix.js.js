@@ -7,12 +7,14 @@
 
 	matrix.addHandler( "js", {
 		load : matrix.buildLoad(
+			//checkPreload
 			function ( url ) {
 				return !!($( "script" ).filter(
 					function () {
 						return this.src === url;
 					} ).length);
 			},
+			//buildSourceEvaluator
 			function ( resource, url, sourceCode ) {
 				//build release method defined in the script
 				var promise = matrix.promises( resource );
@@ -26,7 +28,7 @@
 				}
 
 				return function () {
-					matrix.log( "evaluating script at " + resource );
+					matrix.log( "\trunning js  " + url );
 					$.globalEval( sourceCode );
 					promise.defer.resolve();
 				};
