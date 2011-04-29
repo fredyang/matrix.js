@@ -1,15 +1,13 @@
 //add app handler
 (function( $, matrix ) {
-	var rapp = /(\w+)\.app$/;
 
 	//extend js handler
 	var handler = matrix.addHandler( "app", "js", {
 
 		//add url method
-		url: function ( resource ) {
+		url: function ( resourceKey ) {
 
-			var appName = rapp.exec( resource );
-			appName = appName && appName[1];
+			var appName = matrix.resourceName( resourceKey )
 
 			return matrix.fullUrl( matrix.baseUrl + "app/" + appName + ".js" );
 		}
@@ -18,11 +16,10 @@
 
 	var _load = handler.load;
 
-	handler.load = function ( resource ) {
-		var _promise = _load( resource );
+	handler.load = function ( resourceKey ) {
+		var _promise = _load( resourceKey );
 
-		var appName = rapp.exec( resource );
-		appName = appName && appName[1];
+		var appName = matrix.resourceName( resourceKey )
 
 		var appDefer = $.Deferred();
 		var appPromise = appDefer.promise();
@@ -36,9 +33,8 @@
 		return appPromise;
 	};
 
-	handler.release = function ( resource ) {
-		var appName = rapp.exec( resource );
-		appName = appName && appName[1];
+	handler.release = function ( resourceKey ) {
+		var appName = matrix.resourceName( resourceKey )
 		window[appName].release();
 		window[appName] = undefined;
 	}

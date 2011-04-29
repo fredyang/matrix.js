@@ -15,9 +15,9 @@
 					} ).length);
 			},
 			//buildSourceEvaluator
-			function ( resource, url, sourceCode ) {
+			function ( resourceKey, url, sourceCode ) {
 				//build release method defined in the script
-				var promise = matrix.promises( resource );
+				var promise = matrix.promises( resourceKey );
 
 				var releaseMethod = rReleaseMethod.exec( sourceCode );
 
@@ -28,13 +28,13 @@
 				}
 
 				return function () {
-					matrix.log( "\trunning js  " + url );
+					matrix.log( "\tevaluating js  " + url );
 					$.globalEval( sourceCode );
 					promise.defer.resolve();
 				};
 			} ),
-		release: function ( resource ) {
-			var promise = matrix.promises( resource );
+		release: function ( resourceKey ) {
+			var promise = matrix.promises( resourceKey );
 			if ( promise && promise.release ) {
 				promise.release();
 			}

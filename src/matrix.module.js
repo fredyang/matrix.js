@@ -22,8 +22,8 @@
 
 			return defer.promise();
 		},
-		url: function ( resource ) {
-			return resource;
+		url: function ( resourceKey ) {
+			return resourceKey;
 		}
 	} );
 
