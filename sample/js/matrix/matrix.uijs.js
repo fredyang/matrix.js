@@ -1,20 +1,14 @@
 //add uijs handler
 (function( $, matrix ) {
 	//like core.uijs
-	var ruijs = /(\w+)\.uijs$/,
-		rdependencies = /^\s*\/\*[\w\W]*Depends:([\w\W]+)\*\//,
+	var	rdependencies = /^\s*\/\*[\w\W]*Depends:([\w\W]+)\*\//,
 		ruiModule = /jquery\.ui\.(\w+?)\.(js|css)/gi;
 
 	//extend js handler
 	matrix.addHandler( "uijs", "js", {
 
-		//add url method
-		url: function ( resource ) {
-			//extract "core" from "core.uijs"
-			var moduleName = ruijs.exec( resource );
-			moduleName = moduleName && moduleName[1];
-
-			return matrix.fullUrl( matrix.baseUrl +  "jquery.ui/jquery.ui." + moduleName + ".min.js" );
+		url: function ( resourceKey ) {
+			return matrix.fullUrl( matrix.baseUrl +  "jquery.ui/jquery.ui." + matrix.resourceName( resourceKey ) + ".min.js" );
 		},
 
 		parseDepends: function ( sourceCode ) {
