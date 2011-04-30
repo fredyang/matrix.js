@@ -1,7 +1,6 @@
 //add uijs handler
 (function( $, matrix ) {
-	//like core.uijs
-	var	rdependencies = /^\s*\/\*[\w\W]*Depends:([\w\W]+)\*\//,
+ 	var	rdependencies = /^\s*\/\*[\w\W]*Depends:([\w\W]+)\*\//,
 		ruiModule = /jquery\.ui\.(\w+?)\.(js|css)/gi;
 
 	//extend js handler
@@ -16,9 +15,20 @@
 				module,
 				dependText = rdependencies.exec( sourceCode );
 
+
 			if ( dependText = dependText && dependText[1] ) {
+				//dependText is something like
+/*
+				*	jquery.ui.tabs.css
+				*	jquery.ui.core.js
+				*	jquery.ui.widget.js
+*/
 				while ( module = ruiModule.exec( dependText ) ) {
-					// core + .ui + js == core.uijs
+					//find jquery.ui.xxx.css and convert it to xxx.uicss
+					//find jquery.ui.xxx.js and convert it to xxx.uijs
+					
+					// "xx" + ".ui" + "js" == "core.uijs"
+					// "xx" + ".ui" + "css" == "core.uicss"
 					dependencies.push( module[1] + ".ui" + module[2] );
 				}
 				return dependencies.length ? dependencies.toString() : null;
