@@ -1,4 +1,4 @@
-[jquery-matrix](http://x/) - a smart loader
+[jquery-matrix](http://blog.semanticsworks.com/p/jquery-matrix-library.html) - a smart loader
 ==================================================
 
 What you need to build your own jquery-matrix
