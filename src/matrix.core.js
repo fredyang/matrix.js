@@ -14,15 +14,42 @@
 		rresourceType = /\.(\w+)$/,
 		rresourceName = /(.+)\.\w+$/,
 		accessUrl,
+		//it support
+		// matrix(resourceKeys[, fn])
+		// matrix(resourceKeys, loadByOrder[, fn])
 		matrix = function( resourceKeys, fn ) {
-			var promise;
+			var promise,
+				i,
+				keys,
+				callbacks,
+				loadByOrder;
+
+			if ( !fn || (typeof fn === "function") ) {
+				loadByOrder = false;
+				callbacks = slice.call( arguments, 1 );
+			} else {
+				loadByOrder = true;
+				callbacks = slice.call( arguments, 2 );
+			}
 			if ( typeof resourceKeys === "string" ) {
-				promise = loadParallel( resourceKeys );
+				if ( loadByOrder ) {
+					keys = split( resourceKeys );
+					for ( i = 0; i < keys.length; i ++ ) {
+						if ( i === 0 ) {
+							matrix.depend( keys [i], null );
+						}
+						if ( i < keys.length - 1 ) {
+							matrix.depend( keys[i + 1], keys[i] );
+						}
+					}
+					promise = loadParallel( keys[keys.length - 1] );
+				} else {
+					promise = loadParallel( resourceKeys );
+				}
 			} else {
 				promise = loadSeries( resourceKeys );
 			}
 
-			var callbacks = fn && slice.call( arguments, 1 );
 			return callbacks ? promise.done.apply( promise, callbacks ) : promise;
 		};
 
@@ -376,7 +403,7 @@
 	}
 
 	function getHandler( resourceKey ) {
-		var handler = _handlers[matrix.resourceType(resourceKey)];
+		var handler = _handlers[matrix.resourceType( resourceKey )];
 		if ( !handler ) {
 			$.error( "handler has not been registered" );
 		}
