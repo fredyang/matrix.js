@@ -1,1 +1,0 @@
-matrix.addHandler("dummy", "module");
