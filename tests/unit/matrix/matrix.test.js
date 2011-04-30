@@ -1,12 +1,5 @@
 (function ( $, matrix ) {
 
-	var rresourceName = /(.+)\.\w+$/;
-
-	function resourceName( resource ) {
-		var resourceName = rresourceName.exec( resource );
-		return resourceName && resourceName[1];
-	}
-
 	var test = window.test = {};
 	test.results = [];
 
@@ -19,15 +12,15 @@
 			var dependencies = matrix.depend( resource );
 			if ( dependencies ) {
 				matrix.load( dependencies, function () {
-					test[resourceName( resource )] = true;
-					test.results.push( resourceName( resource ) );
+					test[matrix.resourceName( resource )] = true;
+					test.results.push( matrix.resourceName( resource ) );
 					defer.resolve();
 				} );
 			} else {
 
 				setTimeout( function () {
-					test[resourceName( resource )] = true;
-					test.results.push( resourceName( resource ) );
+					test[matrix.resourceName( resource )] = true;
+					test.results.push( matrix.resourceName( resource ) );
 					defer.resolve();
 				}, Math.floor( Math.random() * 11 ) * 10 );
 			}
@@ -38,11 +31,11 @@
 		release : function ( resource ) {
 			//revert the side effect
 
-			delete test[resourceName( resource )];
+			delete test[matrix.resourceName( resource )];
 			//test.results.push( resource );
 			for ( var i = 0; i < test.results.length; i++ ) {
-				if (test.results[i] === resourceName( resource )) {
-					test.results.splice(i, 1);
+				if ( test.results[i] === matrix.resourceName( resource ) ) {
+					test.results.splice( i, 1 );
 				}
 			}
 		}
