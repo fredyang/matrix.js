@@ -29,6 +29,26 @@ asyncTest( "resource parallel load test", function() {
 	} );
 } );
 
+asyncTest("load by order test", function () {
+	matrix.baseUrl = "unit/"
+
+	matrix.load("d1.test, d2.test, d3.test", true, function () {
+
+		equal(matrix.depend("d1.test"), null, "dependencies is automatic generated");
+		equal(matrix.depend("d2.test"), "d1.test", "dependencies is automatic generated");
+		equal(matrix.depend("d3.test"), "d2.test", "dependencies is automatic generated");
+
+		ok( test.d1 && test.d2 && test.d3, "can load in parallel" );
+
+		matrix.release( "d3.test" );
+		ok( !test.d1 && !test.d2 && !test.d3, "when d3 release, d1, d2 will release automatic" );
+		matrix.depend("d1.test", undefined)
+		matrix.depend("d2.test", undefined)
+		matrix.depend("d3.test", undefined)
+		start();
+	});
+});
+
 asyncTest( "resource serial load test", function () {
 	matrix.baseUrl = "unit/";
 
@@ -74,38 +94,38 @@ asyncTest( "serail resource dependency test", function () {
 
 test( "reference count test", function () {
 	matrix.load( "a.module" );
-	ok( matrix._promises["a.module"], "after loaded a promise is added" );
+	ok( matrix.promises("a.module"), "after loaded a promise is added" );
 	matrix.release( "a.module" );
-	ok( !matrix._promises["a.module"], "after released,  a promise is removed" );
+	ok( !matrix.promises("a.module"), "after released,  a promise is removed" );
 
 	matrix.depend( "a.module", "b.module, c.module" );
 	matrix.depend( "d.module", "b.module, c.module" );
 	matrix.load( "a.module" );
-	equal( matrix._promises["a.module"].refCount, 1, "a.module.refCount === 1" );
-	equal( matrix._promises["b.module"].refCount, 1, "b.module.refCount === 1" );
-	equal( matrix._promises["c.module"].refCount, 1, "c.module.refCount === 1" );
-	ok( matrix._promises["a.module"] && matrix._promises["b.module"] && matrix._promises["c.module"], "a,b,c are loaded" );
+	equal( matrix.promises("a.module").refCount, 1, "a.module.refCount === 1" );
+	equal( matrix.promises("b.module").refCount, 1, "b.module.refCount === 1" );
+	equal( matrix.promises("c.module").refCount, 1, "c.module.refCount === 1" );
+	ok( matrix.promises("a.module") && matrix.promises("b.module") && matrix.promises("c.module"), "a,b,c are loaded" );
 	matrix.load( "d.module" );
-	ok( matrix._promises["a.module"] && matrix._promises["b.module"]
-		    && matrix._promises["c.module"]
-		&& matrix._promises["d.module"], "a,b,c,d are loaded" );
+	ok( matrix.promises("a.module") && matrix.promises("b.module")
+		    && matrix.promises("c.module")
+		&& matrix.promises("d.module"), "a,b,c,d are loaded" );
 
-	equal( matrix._promises["a.module"].refCount, 1, "a.module.refCount === 1" );
-	equal( matrix._promises["b.module"].refCount, 2, "b.module.refCount === 2" );
-	equal( matrix._promises["c.module"].refCount, 2, "c.module.refCount === 2" );
-	equal( matrix._promises["d.module"].refCount, 1, "c.module.refCount === 1" );
+	equal( matrix.promises("a.module").refCount, 1, "a.module.refCount === 1" );
+	equal( matrix.promises("b.module").refCount, 2, "b.module.refCount === 2" );
+	equal( matrix.promises("c.module").refCount, 2, "c.module.refCount === 2" );
+	equal( matrix.promises("d.module").refCount, 1, "c.module.refCount === 1" );
 
 	matrix.release( "d.module" );
-	equal( matrix._promises["a.module"].refCount, 1, "a.module.refCount === 1" );
-	equal( matrix._promises["b.module"].refCount, 1, "b.module.refCount === 1" );
-	equal( matrix._promises["c.module"].refCount, 1, "c.module.refCount === 1" );
-	ok( !matrix._promises["d.module"], "d is released" );
+	equal( matrix.promises("a.module").refCount, 1, "a.module.refCount === 1" );
+	equal( matrix.promises("b.module").refCount, 1, "b.module.refCount === 1" );
+	equal( matrix.promises("c.module").refCount, 1, "c.module.refCount === 1" );
+	ok( !matrix.promises("d.module"), "d is released" );
 
 	matrix.release( "a.module" );
-	ok( !matrix._promises["a.module"]
-		    && !matrix._promises["b.module"]
-		    && !matrix._promises["c.module"]
-		&& !matrix._promises["d.module"], "a,b,c,d are released" );
+	ok( !matrix.promises("a.module")
+		    && !matrix.promises("b.module")
+		    && !matrix.promises("c.module")
+		&& !matrix.promises("d.module"), "a,b,c,d are released" );
 } );
 
 module( "test js handler" );
@@ -150,12 +170,12 @@ asyncTest( "test programmatic dependency registration", function() {
 test( "test static linked script", function () {
 
 	matrix.baseUrl = "unit/"
-	matrix.load( "depend5.js" );
-	var url = matrix.url( "depend5.js" );
-	ok( matrix._promises[url], "promise is immediately resolved" );
-	ok( matrix._promises[url].preload, "depend5.js is preload" );
+	var url = "depend5.js";
+	matrix.load( url );
+	ok( matrix.promises(url), "promise is immediately resolved" );
+	ok( matrix.promises(url).preload, "depend5.js is preload" );
 	matrix.release( "depend5.js" );
-	ok( matrix._promises[url], "statically linked script can not be released" );
+	ok( matrix.promises(url), "statically linked script can not be released" );
 } );
 
 asyncTest( "test double reference to resource", function() {
