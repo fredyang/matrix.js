@@ -147,7 +147,7 @@
 				depends = (depends && depends[1] ) || null;
 			}
 
-			matrix.depend( resourceKey, depends )
+			matrix.depend( resourceKey, depends );
 			return depends;
 		}
 
