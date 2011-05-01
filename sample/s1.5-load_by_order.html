@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8"/>
+	<title>simple dependency load by order</title>
+
+	<link rel="stylesheet" href="css/demos.css">
+
+	<script src="../jquery.js"></script>
+	<script src="../src/matrix.core.js"></script>
+	<script src="../src/matrix.module.js"></script>
+	<script src="../src/matrix.js.js"></script>
+	<script src="../src/matrix.css.js"></script>
+
+
+	<script>
+
+		$( function() {
+
+			matrix.url( {
+				"ui.core.css": "js/jquery.ui/css/base/jquery.ui.core.css",
+				"ui.dialog.css": "js/jquery.ui/css/base/jquery.ui.dialog.css",
+				"ui.resizable.css": "js/jquery.ui/css/base/jquery.ui.resizable.css",
+				"ui.button.css": "js/jquery.ui/css/base/jquery.ui.button.css",
+				"ui.smoothness.css": "js/jquery.ui/css/smoothness/jquery.ui.theme.css",
+				"ui.redmond.css": "js/jquery.ui/css/redmond/jquery.ui.theme.css",
+				"ui.dialog.js":"js/jquery.ui/jquery.ui.dialog.min.js",
+				"ui.core.js":"js/jquery.ui/jquery.ui.core.min.js",
+				"ui.widget.js":"js/jquery.ui/jquery.ui.widget.min.js",
+				"ui.button.js":"js/jquery.ui/jquery.ui.button.min.js",
+				"ui.draggable.js":"js/jquery.ui/jquery.ui.draggable.min.js",
+				"ui.mouse.js":"js/jquery.ui/jquery.ui.mouse.min.js",
+				"ui.position.js":"js/jquery.ui/jquery.ui.position.min.js",
+				"ui.resizable.js":"js/jquery.ui/jquery.ui.resizable.min.js"
+			} );
+
+
+			matrix.load( "ui.core.css, ui.button.css, ui.resizable.css, ui.redmond.css, ui.dialog.css, ui.core.js, ui.widget.js, ui.button.js, ui.mouse.js, ui.draggable.js,  ui.position.js, ui.resizable.js, ui.dialog.js", function () {
+				$( "#linkDialog" ).click( function() {
+					$( "#dialog" ).dialog();
+					return false;
+				} );
+
+
+			} );
+
+		} );
+	</script>
+</head>
+<body>
+
+<div class="demo">
+	<h1>use the order of resource keys as depedencies</h1>
+
+	<h1 id="result"></h1>
+
+	<h1 id="dialogLoadtime"></h1>
+
+
+	<h1><a id="linkDialog" href="#">Click for dialog!</a></h1>
+
+	<div id="dialog" title="Basic dialog" style="display:none;">
+		<p>This is the default dialog which is useful for displaying
+			information. The dialog window can be moved, resized and closed with
+			the 'x' icon.</p>
+	</div>
+
+</div>
+
+
+</body>
+</html>
+
+
