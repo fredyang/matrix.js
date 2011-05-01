@@ -5,19 +5,19 @@
 
 	matrix.addHandler( "css", {
 		load: matrix.buildLoad(
-			//checkPreload
+			//resourcePreloaded
 			function ( url ) {
 				return !!($( "link" ).filter(
 					function () {
 						return this.href === url &&  $(this).attr('matrix');
 					} ).length);
 			},
-			//buildSourceEvaluator
+			//buildEvaluate
 			function ( resourceKey, url, sourceCode ) {
-				var promise = matrix.promises( resourceKey );
 				return function () {
 					matrix.log( "\tevaluating css " + url );
-					$( "<link href='" + url + "' " + "rel='stylesheet' type='text/css' matrix='true' />" ).appendTo( "head" );
+					var promise = matrix.promises( resourceKey );
+					$( "<link href='" + url + "' " + "rel='stylesheet' type='text/css' matrix='1' />" ).appendTo( "head" );
 					setTimeout( function () {
 						promise.defer.resolve();
 					}, 1 );

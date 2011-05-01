@@ -137,14 +137,18 @@
 		 * it returns null, meaning the it has no dependencies
 		 * or an array of resource keys
 		 */
-		parseDepends: function ( resourceKey, sourceCode ) {
-			var handler = getHandler( resourceKey );
-			if ( handler.parseDepends ) {
-				return handler.parseDepends( sourceCode );
+		parse: function ( resourceKey, sourceCode ) {
+			var depends,
+				handler = getHandler( resourceKey );
+			if ( handler.parse ) {
+				depends = handler.parse( resourceKey, sourceCode );
+			} else {
+				depends = rheader.exec( sourceCode );
+				depends = (depends && depends[1] ) || null;
 			}
 
-			var depends = rheader.exec( sourceCode );
-			return (depends && depends[1] ) || null;
+			matrix.depend( resourceKey, depends )
+			return depends;
 		}
 
 	} );
@@ -247,19 +251,25 @@
 			return (_handlers[name] = $.extend( {}, _handlers[baseName], extension ));
 		},
 
-		buildLoad: function ( checkPreload, buildSourceEvaluator ) {
+		/**
+		 * a factory to build a load method
+		 * @param resourcePreloaded, is a function(url), which check whether the reourse has
+		 * been preloaded
+		 * @param buildEvaluate, is a function(resourceKey, url, sourceCode), which do some
+		 * pre-processing, and return a evalute method
+		 */
+		buildLoad: function ( resourcePreloaded, buildEvaluate ) {
 
-			var fetchResource = function ( resourceKey, url, deepParse ) {
+			var fetch = function ( resourceKey, url, deepParse ) {
 
 				matrix.log( "fetching @ " + url );
 
 				$.get( url, null, null, "text" ).success( function ( sourceCode ) {
-					var evaluate = buildSourceEvaluator( resourceKey, url, sourceCode );
+					var evaluate = buildEvaluate( resourceKey, url, sourceCode );
 
-					var dependencies;
-					var shouldDeepParse = deepParse && (dependencies = matrix.parseDepends( resourceKey, sourceCode ));
+					var dependencies = deepParse && matrix.parse( resourceKey, sourceCode );
 
-					if ( shouldDeepParse ) {
+					if ( dependencies ) {
 						//set dependencies so that it can be used in release method
 						matrix.depend( resourceKey, dependencies );
 
@@ -279,7 +289,7 @@
 					promise = defer.promise(),
 					url = matrix.url( resourceKey );
 
-				var preLoad = checkPreload( url );
+				var preLoad = resourcePreloaded( url );
 				if ( preLoad ) {
 					promise.preload = true;
 					defer.resolve();
@@ -293,17 +303,17 @@
 				if ( dependencies ) {
 					//matrix.log("\tloading registered dependencies : " + resource)
 					matrix.load( dependencies, function () {
-						fetchResource( resourceKey, url, false );
+						fetch( resourceKey, url, false );
 					} );
 				}
 				else if ( dependencies === null ) {
 					//dependencies is explicitly set to null,
 					// meaning that the resource has no dependencies
-					fetchResource( resourceKey, url, false );
+					fetch( resourceKey, url, false );
 
 				} else {
 					//dependencies is unknown, need to deep parse content
-					fetchResource( resourceKey, url, true );
+					fetch( resourceKey, url, true );
 
 				}
 

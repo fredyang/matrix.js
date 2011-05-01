@@ -10,7 +10,7 @@
 			return matrix.fullUrl( matrix.baseUrl +  "jquery.ui/jquery.ui." + matrix.resourceName( resourceKey ) + ".min.js" );
 		},
 
-		parseDepends: function ( sourceCode ) {
+		parse: function ( resourceKey, sourceCode ) {
 			var dependencies = [],
 				module,
 				dependText = rdependencies.exec( sourceCode );

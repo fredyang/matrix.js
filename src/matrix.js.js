@@ -7,14 +7,14 @@
 
 	matrix.addHandler( "js", {
 		load : matrix.buildLoad(
-			//checkPreload
+			//resourcePreloaded
 			function ( url ) {
 				return !!($( "script" ).filter(
 					function () {
 						return this.src === url;
 					} ).length);
 			},
-			//buildSourceEvaluator
+			//buildEvaluate
 			function ( resourceKey, url, sourceCode ) {
 				//build release method defined in the script
 				var promise = matrix.promises( resourceKey );
