@@ -1,0 +1,19 @@
+Handler should implement one or more of the following, only
+load method is required, others are optional. You can also
+inherit existing handler.
+
+1. load(resource)
+how to load the resource and its dependencies into memory
+it is call by the core's loadOne(resource) method
+
+2. release(resource)
+how to release single resource, but not its dependencies,
+it is called by core's release
+
+3. url(resource)
+how to build a url using a naming convention
+it is called by core's url method
+
+4. parse(sourceCode)
+how to parse source code to build dependencies
+it is called by core's parse

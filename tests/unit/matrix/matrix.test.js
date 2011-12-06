@@ -11,7 +11,7 @@
 
 			var dependencies = matrix.depend( resource );
 			if ( dependencies ) {
-				matrix.load( dependencies, function () {
+				matrix( dependencies ).done( function () {
 					test[matrix.resourceName( resource )] = true;
 					test.results.push( matrix.resourceName( resource ) );
 					defer.resolve();

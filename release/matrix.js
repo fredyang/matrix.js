@@ -1,5 +1,5 @@
 /*!
- * matrix JavaScript Library v0.2
+ * matrix JavaScript Library v0.1
  * http://semanticsworks.com/p/matrix-library.html
  *
  * Copyright 2011, Fred Yang
@@ -7,7 +7,7 @@
  * http://www.opensource.org/licenses/mit-license
  * http://www.opensource.org/licenses/gpl-2.0
  *
- * Date: Sat Apr 30 02:07:22 2011 -0400
+ * Date: Wed Apr 27 14:38:19 2011 -0400
  *///
 (function ( $, undefined ) {
 
@@ -21,45 +21,17 @@
 		rcomma = /,/,
 		rspace = /\s+/g,
 		slice = [].slice,
-		rresourceType = /\.(\w+)$/,
-		rresourceName = /(.+)\.\w+$/,
+		rextension = /\.(\w+)$/,
 		accessUrl,
-		//it support
-		// matrix(resourceKeys[, fn])
-		// matrix(resourceKeys, loadByOrder[, fn])
-		matrix = function( resourceKeys, fn ) {
-			var promise,
-				i,
-				keys,
-				callbacks,
-				loadByOrder;
-
-			if ( !fn || (typeof fn === "function") ) {
-				loadByOrder = false;
-				callbacks = slice.call( arguments, 1 );
+		matrix = function( resources, fn ) {
+			var promise;
+			if ( typeof resources === "string" ) {
+				promise = loadParallel( resources );
 			} else {
-				loadByOrder = true;
-				callbacks = slice.call( arguments, 2 );
-			}
-			if ( typeof resourceKeys === "string" ) {
-				if ( loadByOrder ) {
-					keys = split( resourceKeys );
-					for ( i = 0; i < keys.length; i ++ ) {
-						if ( i === 0 ) {
-							matrix.depend( keys [i], null );
-						}
-						if ( i < keys.length - 1 ) {
-							matrix.depend( keys[i + 1], keys[i] );
-						}
-					}
-					promise = loadParallel( keys[keys.length - 1] );
-				} else {
-					promise = loadParallel( resourceKeys );
-				}
-			} else {
-				promise = loadSeries( resourceKeys );
+				promise = loadSeries( resources );
 			}
 
+			var callbacks = fn && slice.call( arguments, 1 );
 			return callbacks ? promise.done.apply( promise, callbacks ) : promise;
 		};
 
@@ -71,42 +43,42 @@
 
 		//load: matrix,
 
-		release: function( resourceKeys ) {
+		release: function( resources ) {
 			var i,
-				resourceKey,
+				singleResource,
 				dependencies,
 				handler,
 				refCount,
 				promise;
 
-			if ( typeof resourceKeys === "string" ) {
+			if ( typeof resources === "string" ) {
 
-				resourceKeys = split( resourceKeys );
+				resources = split( resources );
 			}
 
 			//if there is only one resource
-			if ( resourceKeys.length === 1 ) {
+			if ( resources.length === 1 ) {
 
-				resourceKey = resourceKeys[0];
+				singleResource = resources[0];
 
-				promise = matrix.promises( resourceKey );
+				promise = matrix.promises( singleResource );
 				//make sure it will not throw exception when
 				// releasing some resource which is not in page
 				if ( !promise ) {
 					return;
 				}
 
-				handler = getHandler( resourceKey );
+				handler = getHandler( singleResource );
 
 				if ( !promise.preload ) {
 					refCount = --promise.refCount;
 					if ( refCount === 0 ) {
-						handler.release && handler.release( resourceKey );
+						handler.release && handler.release( singleResource );
 
 						//delete the promises associated with the resource
-						matrix.promises( resourceKey, undefined );
+						matrix.promises( singleResource, undefined );
 
-						if ( (dependencies = matrix.depend( resourceKey )) ) {
+						if ( (dependencies = matrix.depend( singleResource )) ) {
 							matrix.release( dependencies );
 						}
 					}
@@ -114,28 +86,28 @@
 
 			} else {
 				//releaseAll
-				for ( i = 0; i < resourceKeys.length; i ++ ) {
-					matrix.release( resourceKeys[i] );
+				for ( i = 0; i < resources.length; i ++ ) {
+					matrix.release( resources[i] );
 				}
 			}
 		},
 
-		url: function ( resourceKey, url ) {
+		url: function ( resource, url ) {
 			var args;
 
-			if ( typeof resourceKey === "string" ) {
-				var handler = getHandler( resourceKey );
+			if ( typeof resource === "string" ) {
+				var handler = getHandler( resource );
 				if ( handler.url ) {
-					return handler.url( resourceKey );
+					return handler.url( resource );
 				}
 			}
 
 			//if resource's url is not in database
 			//and user is trying to get it,
 			// use resource value as url
-			if ( (typeof resourceKey === "string" ) && !_urls[resourceKey] && url === undefined ) {
-				url = matrix.baseUrl + resourceKey;
-				args = [resourceKey, url];
+			if ( (typeof resource === "string" ) && !_urls[resource] && url === undefined ) {
+				url = matrix.baseUrl + resource;
+				args = [resource, url];
 			} else {
 				args = slice.call( arguments );
 			}
@@ -147,8 +119,8 @@
 		 * it returns null, meaning the it has no dependencies
 		 * or an array of resource keys
 		 */
-		parseDepends: function ( resourceKey, sourceCode ) {
-			var handler = getHandler( resourceKey );
+		parseDepends: function ( resource, sourceCode ) {
+			var handler = getHandler( resource );
 			if ( handler.parseDepends ) {
 				return handler.parseDepends( sourceCode );
 			}
@@ -192,13 +164,13 @@
 	// members to configure matrix
 	$.extend( matrix, {
 
-		depend: function ( resourceKey, dependencies, reload ) {
+		depend: function ( resource, dependencies, reload ) {
 
-			if ( typeof resourceKey === "object" ) {
+			if ( typeof resource === "object" ) {
 				reload = dependencies;
-				for ( var key in resourceKey ) {
-					if ( resourceKey.hasOwnProperty( key ) ) {
-						matrix.depend( key, resourceKey[key], reload );
+				for ( var key in resource ) {
+					if ( resource.hasOwnProperty( key ) ) {
+						matrix.depend( key, resource[key], reload );
 					}
 				}
 				return;
@@ -206,33 +178,37 @@
 
 			if ( dependencies === undefined ) {
 				if ( arguments.length == 1 ) {
-					return _dependencies[resourceKey];
+					return _dependencies[resource];
 				} else {
-					delete _dependencies[resourceKey];
+					delete _dependencies[resource];
 				}
 
 			} else {
 
 				//if caller ask for reload and the resources has been loaded
 				//then we need to reload
-				var needToReload = reload && matrix.promises( resourceKey );
+				var needToReload = reload && matrix.promises( resource );
 
 				if ( needToReload ) {
-					matrix.release( resourceKey, true );
-					_dependencies[resourceKey] = dependencies;
-					return matrix.load( resourceKey );
+					matrix.release( resource, true );
+					_dependencies[resource] = dependencies;
+					return matrix.load( resource );
 				} else {
-					return (_dependencies[resourceKey] = dependencies);
+					return (_dependencies[resource] = dependencies);
 				}
 			}
 
 		},
+
+		promises : buildAccess( _promises, matrix.url ),
 
 		//the url relative to the current location
 		baseUrl: "",
 
 		//the url relative to the baseUrl
 		homeUrl: "matrix/",
+
+
 
 		loadHandlers: function ( names ) {
 			if ( typeof names === "string" ) {
@@ -259,18 +235,18 @@
 
 		buildLoad: function ( checkPreload, buildSourceEvaluator ) {
 
-			var fetchResource = function ( resourceKey, url, deepParse ) {
+			var loadResource = function ( resource, url, deepParse ) {
 
 
 				$.get( url, null, null, "text" ).success( function ( sourceCode ) {
-					var evaluate = buildSourceEvaluator( resourceKey, url, sourceCode );
+					var evaluate = buildSourceEvaluator( resource, url, sourceCode );
 
 					var dependencies;
-					var shouldDeepParse = deepParse && (dependencies = matrix.parseDepends( resourceKey, sourceCode ));
+					var shouldDeepParse = deepParse && (dependencies = matrix.parseDepends( resource, sourceCode ));
 
 					if ( shouldDeepParse ) {
 						//set dependencies so that it can be used in release method
-						matrix.depend( resourceKey, dependencies );
+						matrix.depend( resource, dependencies );
 
 						matrix.load( dependencies, evaluate );
 
@@ -280,12 +256,12 @@
 				} );
 			};
 
-			return function ( resourceKey ) {
+			return function ( resource ) {
 
 				var dependencies,
 					defer = $.Deferred(),
 					promise = defer.promise(),
-					url = matrix.url( resourceKey );
+					url = matrix.url( resource );
 
 				var preLoad = checkPreload( url );
 				if ( preLoad ) {
@@ -295,21 +271,21 @@
 				}
 
 				promise.defer = defer;
-				dependencies = matrix.depend( resourceKey );
+				dependencies = matrix.depend( resource );
 
 				if ( dependencies ) {
 					matrix.load( dependencies, function () {
-						fetchResource( resourceKey, url, false );
+						loadResource( resource, url, false );
 					} );
 				}
 				else if ( dependencies === null ) {
 					//dependencies is explicitly set to null,
 					// meaning that the resource has no dependencies
-					fetchResource( resourceKey, url, false );
+					loadResource( resource, url, false );
 
 				} else {
 					//dependencies is unknown, need to deep parse content
-					fetchResource( resourceKey, url, true );
+					loadResource( resource, url, true );
 
 				}
 
@@ -321,26 +297,9 @@
 
 	// public utilities
 	$.extend( matrix, {
-
-		promises : buildAccess( _promises, matrix.url ),
-
 		fullUrl: function ( relativeUrl ) {
 			dummyLink.href = relativeUrl;
 			return dummyLink.href;
-		},
-
-		resourceType: function ( resourceKey ) {
-			var resourceType = rresourceType.exec( resourceKey );
-			resourceType = resourceType && resourceType[1];
-			if ( !resourceType ) {
-				$.error( "missing resource type in resourceKey" );
-			}
-			return resourceType;
-		},
-
-		resourceName: function ( resourceKey ) {
-			var resourceName = rresourceName.exec( resourceKey );
-			return resourceName && resourceName[1];
 		},
 
 		debug: function () {
@@ -360,17 +319,17 @@
 	}
 
 	//resources is string
-	function loadParallel( resourceKeys ) {
+	function loadParallel( resources ) {
 		var promises = [],
 			promise;
-		resourceKeys = split( resourceKeys );
+		resources = split( resources );
 
-		if ( resourceKeys.length === 1 ) {
-			promise = loadOne( resourceKeys[0] );
+		if ( resources.length === 1 ) {
+			promise = loadOne( resources[0] );
 		}
 		else {
-			for ( var i = 0; i < resourceKeys.length; i++ ) {
-				promises.push( loadOne( resourceKeys[i] ) );
+			for ( var i = 0; i < resources.length; i++ ) {
+				promises.push( loadOne( resources[i] ) );
 			}
 			promise = $.when.apply( $, promises );
 		}
@@ -379,44 +338,50 @@
 	}
 
 	//resources is array
-	function loadSeries( resourceKeys ) {
+	function loadSeries( resources ) {
 		var promise,
 			i = 0,
 			temp,
-			resourceKey;
+			resource;
 
-		for ( i = 0; i < resourceKeys.length; i ++ ) {
-			resourceKey = resourceKeys[i];
+		for ( i = 0; i < resources.length; i ++ ) {
+			resource = resources[i];
 			if ( i === 0 ) {
-				promise = matrix.load( resourceKey );
+				promise = matrix.load( resource );
 			} else {
-				promise = promise.load( resourceKey );
+				promise = promise.load( resource );
 			}
 		}
 
 		return addLoadMethod( promise );
 	}
 
-	function getHandler( resourceKey ) {
-		var handler = _handlers[matrix.resourceType( resourceKey )];
+	function getHandler( resource ) {
+		var resourceType = rextension.exec( resource );
+		resourceType = resourceType && resourceType[1];
+		if ( !resourceType ) {
+			$.error( "missing extension in reference, can't get handler" );
+		}
+
+		var handler = _handlers[resourceType];
 		if ( !handler ) {
 			$.error( "handler has not been registered" );
 		}
 		return handler;
 	}
 
-	function loadOne( resourceKey ) {
+	function loadOne( resource ) {
 		var handler,
-			promise = matrix.promises( resourceKey );
+			promise = matrix.promises( resource );
 
 		if ( !promise ) {
-			handler = getHandler( resourceKey );
-			promise = handler.load( resourceKey );
+			handler = getHandler( resource );
+			promise = handler.load( resource );
 
 			if ( !promise.preload ) {
 				promise.refCount = 1;
 			}
-			matrix.promises( resourceKey, promise );
+			matrix.promises( resource, promise );
 		} else {
 			if ( !promise.preload ) {
 				promise.refCount ++;
@@ -426,7 +391,7 @@
 		return promise;
 	}
 
-	/*this method allow user serialize fetching and evaluation of resource*/
+	/*this method allow user serialize loading of resource*/
 	function addLoadMethod( promise ) {
 		var bridgeDefer = $.Deferred();
 		promise.load = function () {
@@ -461,8 +426,8 @@
 
 			return defer.promise();
 		},
-		url: function ( resourceKey ) {
-			return resourceKey;
+		url: function ( resource ) {
+			return resource;
 		}
 	} );
 
@@ -480,9 +445,9 @@
 					} ).length);
 			},
 			//buildSourceEvaluator
-			function ( resourceKey, url, sourceCode ) {
+			function ( resource, url, sourceCode ) {
 				//build release method defined in the script
-				var promise = matrix.promises( resourceKey );
+				var promise = matrix.promises( resource );
 
 				var releaseMethod = rReleaseMethod.exec( sourceCode );
 
@@ -497,8 +462,8 @@
 					promise.defer.resolve();
 				};
 			} ),
-		release: function ( resourceKey ) {
-			var promise = matrix.promises( resourceKey );
+		release: function ( resource ) {
+			var promise = matrix.promises( resource );
 			if ( promise && promise.release ) {
 				promise.release();
 			}
@@ -516,8 +481,8 @@
 					} ).length);
 			},
 			//buildSourceEvaluator
-			function ( resourceKey, url, sourceCode ) {
-				var promise = matrix.promises( resourceKey );
+			function ( resource, url, sourceCode ) {
+				var promise = matrix.promises( resource );
 				return function () {
 					$( "<link href='" + url + "' " + "rel='stylesheet' type='text/css' matrix='true' />" ).appendTo( "head" );
 					setTimeout( function () {
@@ -526,8 +491,8 @@
 				};
 			} ),
 
-		release: function ( resourceKey ) {
-			var url = matrix.url( resourceKey );
+		release: function ( resource ) {
+			var url = matrix.url( resource );
 			$( "link" ).filter(
 				function () {
 					return this.href === url && $(this).attr('matrix');

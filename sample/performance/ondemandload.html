@@ -20,18 +20,18 @@
 	<script src="../js/matrix/matrix.uicss.js"></script>
 	<script src="../js/matrix/matrix.uitheme.js"></script>
 
-	<script type="text/javascript" src="../js/matrix/matrix.config.js"></script>
+	<script type="text/javascript" src="../js/matrix/config.js"></script>
 
 	<script>
 		$( function() {
 			var pageLoaded = (new Date);
 
-			matrix.baseUrl = "../js/";
+			matrix.resourceBaseUrl = "../js/";
 
 			$( "#linkDialog" ).one( "click", function() {
 				var link = $( this );
 				var startLoadDialog = new Date;
-				matrix.load( "dialog.module", function () {
+				matrix( "dialog.module").done( function () {
 					$( "#dialog" ).dialog();
 					var dialogLoaded = (new Date);
 					$( "#dialogLoadtime" ).text( "dialog load time " + (dialogLoaded - startLoadDialog) + "ms" );

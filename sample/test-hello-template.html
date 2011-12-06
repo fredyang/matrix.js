@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script src="../dist/matrix.debug.js"></script>
+<script src="js/matrix/config.js"></script>
+
+<!--the following is optional-->
+<!--<script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.js" charset=""></script>-->
+<!--<script src="js/matrix/matrix.tmpl.js"></script>-->
+
+<script type="text/javascript">
+	//	$( function () {
+	//		matrix( "hello.tmpl", function () {
+	//			$.tmpl( "hello", "fred" ).appendTo( "body" );
+	//		} );
+	//	} );
+
+	//matrix.loadReady( "hello.tmpl" );
+
+	matrix( true, "hello.tmpl" );
+
+	//this is your normal workflow
+	$( function () {
+		$.tmpl( "hello", "fred" ).appendTo( "body" );
+	} );
+
+</script>
+</body>
+</html>

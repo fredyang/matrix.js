@@ -1,8 +1,8 @@
 matrix.debug();
 
 test( "url resolution", function () {
-	equal( matrix.baseUrl, "", "baseUrl default to empty string" );
-	equal( matrix.homeUrl, "matrix/", "homeUrl default to 'matrix'" );
+	equal( matrix.resourceBaseUrl, "", "baseUrl default to empty string" );
+	equal( matrix.matrixBaseUrl, "matrix/", "homeUrl default to 'matrix'" );
 
 	var expected = matrix.fullUrl( "x.js" );
 	var resourceUrl = matrix.url( "x.js" );
@@ -15,11 +15,10 @@ test( "url resolution", function () {
 
 } );
 
-
 asyncTest( "resource parallel load test", function() {
-	matrix.baseUrl = "unit/";
+	matrix.resourceBaseUrl = "unit/";
 
-	matrix.load( "d1.test, d2.test, d3.test" ).done( function () {
+	matrix( "d1.test, d2.test, d3.test" ).done( function () {
 
 		ok( test.d1 && test.d2 && test.d3, "can load in parallel" );
 		matrix.release( "d1.test, d2.test, d3.test" );
@@ -29,30 +28,30 @@ asyncTest( "resource parallel load test", function() {
 	} );
 } );
 
-asyncTest("load by order test", function () {
-	matrix.baseUrl = "unit/"
+asyncTest( "load by order test", function () {
+	matrix.resourceBaseUrl = "unit/"
 
-	matrix.load("d1.test, d2.test, d3.test", true, function () {
+	matrix( "d1.test, d2.test, d3.test", true ).done( function () {
 
-		equal(matrix.depend("d1.test"), null, "dependencies is automatic generated");
-		equal(matrix.depend("d2.test"), "d1.test", "dependencies is automatic generated");
-		equal(matrix.depend("d3.test"), "d2.test", "dependencies is automatic generated");
+		equal( matrix.depend( "d1.test" ), null, "dependencies is automatic generated" );
+		equal( matrix.depend( "d2.test" ), "d1.test", "dependencies is automatic generated" );
+		equal( matrix.depend( "d3.test" ), "d2.test", "dependencies is automatic generated" );
 
 		ok( test.d1 && test.d2 && test.d3, "can load in parallel" );
 
 		matrix.release( "d3.test" );
 		ok( !test.d1 && !test.d2 && !test.d3, "when d3 release, d1, d2 will release automatic" );
-		matrix.depend("d1.test", undefined)
-		matrix.depend("d2.test", undefined)
-		matrix.depend("d3.test", undefined)
+		matrix.depend( "d1.test", undefined )
+		matrix.depend( "d2.test", undefined )
+		matrix.depend( "d3.test", undefined )
 		start();
-	});
-});
+	} );
+} );
 
 asyncTest( "resource serial load test", function () {
-	matrix.baseUrl = "unit/";
+	matrix.resourceBaseUrl = "unit/";
 
-	matrix.load( ["d1.test", "d2.test", "d3.test", "d4.test"], function () {
+	matrix( ["d1.test", "d2.test", "d3.test", "d4.test"] ).done( function () {
 		ok( test.d1 && test.d2 && test.d3 && test.d4, "can load in series" );
 
 		equal( test.results.toString(), "d1,d2,d3,d4", "when load in series, they are can load in seqential order" )
@@ -66,11 +65,11 @@ asyncTest( "resource serial load test", function () {
 } );
 
 asyncTest( "parallel resource registration/load test", function () {
-	matrix.baseUrl = "unit/";
+	matrix.resourceBaseUrl = "unit/";
 
 	matrix.depend( "d1.test", "d2.test, d3.test" );
 	equal( matrix.depend( "d1.test" ), "d2.test, d3.test", "dependencies register successfully" )
-	matrix.load( "d1.test", function () {
+	matrix( "d1.test").done( function () {
 		ok( test.d1 && test.d2 && test.d3, "parallel dependencies is resolved according to registration" );
 		matrix.release( "d1.test, d2.test, d3.test" );
 		matrix.depend( "d1.test", undefined );
@@ -79,12 +78,12 @@ asyncTest( "parallel resource registration/load test", function () {
 } );
 
 asyncTest( "serail resource dependency test", function () {
-	matrix.baseUrl = "unit/";
+	matrix.resourceBaseUrl = "unit/";
 	matrix.depend( "d3.test", ["d1.test", "d2.test"] );
 
 	deepEqual( matrix.depend( "d3.test" ), ["d1.test", "d2.test"], "dependencies register successfully" )
 
-	matrix.load( "d3.test", function () {
+	matrix( "d3.test").done( function () {
 		ok( test.d1 && test.d2 && test.d3, "serial dependencies is resolved according to registration" );
 		equal( test.results, "d1,d2,d3", "can load in series" );
 		matrix.release( "d1.test, d2.test, d3.test" );
@@ -93,46 +92,46 @@ asyncTest( "serail resource dependency test", function () {
 } );
 
 test( "reference count test", function () {
-	matrix.load( "a.module" );
-	ok( matrix.promises("a.module"), "after loaded a promise is added" );
+	matrix( "a.module" );
+	ok( matrix.promises( "a.module" ), "after loaded a promise is added" );
 	matrix.release( "a.module" );
-	ok( !matrix.promises("a.module"), "after released,  a promise is removed" );
+	ok( !matrix.promises( "a.module" ), "after released,  a promise is removed" );
 
 	matrix.depend( "a.module", "b.module, c.module" );
 	matrix.depend( "d.module", "b.module, c.module" );
-	matrix.load( "a.module" );
-	equal( matrix.promises("a.module").refCount, 1, "a.module.refCount === 1" );
-	equal( matrix.promises("b.module").refCount, 1, "b.module.refCount === 1" );
-	equal( matrix.promises("c.module").refCount, 1, "c.module.refCount === 1" );
-	ok( matrix.promises("a.module") && matrix.promises("b.module") && matrix.promises("c.module"), "a,b,c are loaded" );
-	matrix.load( "d.module" );
-	ok( matrix.promises("a.module") && matrix.promises("b.module")
-		    && matrix.promises("c.module")
-		&& matrix.promises("d.module"), "a,b,c,d are loaded" );
+	matrix( "a.module" );
+	equal( matrix.promises( "a.module" ).refCount, 1, "a.module.refCount === 1" );
+	equal( matrix.promises( "b.module" ).refCount, 1, "b.module.refCount === 1" );
+	equal( matrix.promises( "c.module" ).refCount, 1, "c.module.refCount === 1" );
+	ok( matrix.promises( "a.module" ) && matrix.promises( "b.module" ) && matrix.promises( "c.module" ), "a,b,c are loaded" );
+	matrix( "d.module" );
+	ok( matrix.promises( "a.module" ) && matrix.promises( "b.module" )
+		    && matrix.promises( "c.module" )
+		&& matrix.promises( "d.module" ), "a,b,c,d are loaded" );
 
-	equal( matrix.promises("a.module").refCount, 1, "a.module.refCount === 1" );
-	equal( matrix.promises("b.module").refCount, 2, "b.module.refCount === 2" );
-	equal( matrix.promises("c.module").refCount, 2, "c.module.refCount === 2" );
-	equal( matrix.promises("d.module").refCount, 1, "c.module.refCount === 1" );
+	equal( matrix.promises( "a.module" ).refCount, 1, "a.module.refCount === 1" );
+	equal( matrix.promises( "b.module" ).refCount, 2, "b.module.refCount === 2" );
+	equal( matrix.promises( "c.module" ).refCount, 2, "c.module.refCount === 2" );
+	equal( matrix.promises( "d.module" ).refCount, 1, "c.module.refCount === 1" );
 
 	matrix.release( "d.module" );
-	equal( matrix.promises("a.module").refCount, 1, "a.module.refCount === 1" );
-	equal( matrix.promises("b.module").refCount, 1, "b.module.refCount === 1" );
-	equal( matrix.promises("c.module").refCount, 1, "c.module.refCount === 1" );
-	ok( !matrix.promises("d.module"), "d is released" );
+	equal( matrix.promises( "a.module" ).refCount, 1, "a.module.refCount === 1" );
+	equal( matrix.promises( "b.module" ).refCount, 1, "b.module.refCount === 1" );
+	equal( matrix.promises( "c.module" ).refCount, 1, "c.module.refCount === 1" );
+	ok( !matrix.promises( "d.module" ), "d is released" );
 
 	matrix.release( "a.module" );
-	ok( !matrix.promises("a.module")
-		    && !matrix.promises("b.module")
-		    && !matrix.promises("c.module")
-		&& !matrix.promises("d.module"), "a,b,c,d are released" );
+	ok( !matrix.promises( "a.module" )
+		    && !matrix.promises( "b.module" )
+		    && !matrix.promises( "c.module" )
+		&& !matrix.promises( "d.module" ), "a,b,c,d are released" );
 } );
 
 module( "test js handler" );
 
 asyncTest( "test default load by baseUrl and release method creation", function() {
-	matrix.baseUrl = "unit/"
-	matrix.load( "depend1.js" ).done( function ( data ) {
+	matrix.resourceBaseUrl = "unit/"
+	matrix( "depend1.js" ).done( function ( data ) {
 		ok( window.depend1, "can solve depend1.js accoding to baseUrl" );
 		matrix.release( "depend1.js" );
 		ok( !window.depend1, "can create release method by passing content of js file" );
@@ -141,8 +140,8 @@ asyncTest( "test default load by baseUrl and release method creation", function(
 } );
 
 asyncTest( "can resolve/release multiple independent reference", function() {
-	matrix.baseUrl = "unit/";
-	matrix.load( "depend1.js, depend2.js, depend3.js" ).done( function ( data ) {
+	matrix.resourceBaseUrl = "unit/";
+	matrix( "depend1.js, depend2.js, depend3.js" ).done( function ( data ) {
 		ok( window.depend1 && window.depend2 && window.depend3, "depend1 depend2 and depend3 are all resolved" );
 		matrix.release( "depend1.js, depend2.js, depend3.js" );
 		ok( !window.depend1 && !window.depend2 && !window.depend3, "depend1 depend2 depend3 are all released" );
@@ -152,11 +151,11 @@ asyncTest( "can resolve/release multiple independent reference", function() {
 
 asyncTest( "test programmatic dependency registration", function() {
 
-	matrix.baseUrl = "unit/";
+	matrix.resourceBaseUrl = "unit/";
 
 	matrix.depend( "depend1.js", "depend2.js" );
 
-	matrix.load( "depend1.js" ).done( function ( data ) {
+	matrix( "depend1.js" ).done( function ( data ) {
 		start();
 		ok( window.depend1 && window.depend2, "depend1 and depend2 are both resolved" );
 		matrix.release( "depend1.js, depend2.js" );
@@ -169,27 +168,27 @@ asyncTest( "test programmatic dependency registration", function() {
 
 test( "test static linked script", function () {
 
-	matrix.baseUrl = "unit/"
+	matrix.resourceBaseUrl = "unit/"
 	var url = "depend5.js";
-	matrix.load( url );
-	ok( matrix.promises(url), "promise is immediately resolved" );
-	ok( matrix.promises(url).preload, "depend5.js is preload" );
+	matrix( url );
+	ok( matrix.promises( url ), "promise is immediately resolved" );
+	ok( matrix.promises( url ).preload, "depend5.js is preload" );
 	matrix.release( "depend5.js" );
-	ok( matrix.promises(url), "statically linked script can not be released" );
+	ok( matrix.promises( url ), "statically linked script can not be released" );
 } );
 
 asyncTest( "test double reference to resource", function() {
 
-	matrix.baseUrl = "unit/"
+	matrix.resourceBaseUrl = "unit/"
 
 	ok( !window.depend1, "it has been released" );
 
-	matrix.load( "depend1.js", function ( data ) {
+	matrix( "depend1.js").done(function ( data ) {
 		start();
 		ok( window.depend1, "depend1 already defined in depend1.js" );
 
 	}, function () {
-		matrix.load( "depend1.js" ).done( function ( data ) {
+		matrix( "depend1.js" ).done( function ( data ) {
 			//here we don't need to use start(),
 			// because promise resolve immediately
 			ok( window.depend1, "depend1 already defined in depend1.js" );
@@ -203,7 +202,7 @@ asyncTest( "test double reference to resource", function() {
 } );
 
 asyncTest( "javascript release test", function () {
-	matrix.baseUrl = "unit/"
+	matrix.resourceBaseUrl = "unit/"
 
 	ok( !window.depend1, "depend1 initially is undefined" );
 	ok( !window.depend2, "depend2 initially is undefined" );
@@ -214,7 +213,7 @@ asyncTest( "javascript release test", function () {
 		"depend3.js" : "depend2.js, depend1.js"
 	} );
 
-	matrix.load( "depend3.js", function () {
+	matrix( "depend3.js").done( function () {
 		start();
 		ok( window.depend1 && window.depend2 && window.depend3, "depend1/2/3 has been defined" );
 		matrix.release( "depend3.js", true );
@@ -231,7 +230,7 @@ asyncTest( "javascript release test", function () {
 
 asyncTest( "javascript dependencies registration test (programmatic and manifest)", function () {
 
-	matrix.baseUrl = "unit/";
+	matrix.resourceBaseUrl = "unit/";
 
 	matrix.depend( {
 		"depend2.js" : "depend1.js",
@@ -239,7 +238,7 @@ asyncTest( "javascript dependencies registration test (programmatic and manifest
 	} );
 
 	//depend4 depends on depend3.js using manifest
-	matrix.load( "depend4.js", function () {
+	matrix( "depend4.js").done( function () {
 		start();
 		ok( depend1 && depend2 && depend3 && depend4, "depend1/2/3/4 are all resolved, because programmatic and manifest registration work together" );
 		matrix.release( "depend4.js" );
@@ -254,11 +253,11 @@ asyncTest( "javascript dependencies registration test (programmatic and manifest
 } );
 
 asyncTest( "serialize resolving test", function () {
-	matrix.baseUrl = "unit/";
+	matrix.resourceBaseUrl = "unit/";
 
 	ok( !window.depend1 && !window.depend2 && !window.depend3, "depend1/2/3 initially are not defined" );
 
-	matrix.load( "depend3.js" ).load( "depend2.js" ).load( "depend1.js" ).done( function () {
+	matrix( "depend3.js" ).thenLoad( "depend2.js" ).thenLoad( "depend1.js" ).done( function () {
 		ok( window.depend1 && window.depend1 && window.depend3, "depend1/2/3 are all resolved in serial" );
 		matrix.release( "depend3.js" );
 		ok( window.depend1 && window.depend1 && !window.depend3, "only depend3 is released" );
@@ -270,12 +269,12 @@ module( "test css handler" );
 
 asyncTest( "css load and release test", function () {
 
-	matrix.baseUrl = "unit/";
+	matrix.resourceBaseUrl = "unit/";
 
 	var _color = $( "#testcss" ).css( "color" );
 	var _fontSize = $( "#testcss" ).css( "font-size" );
 
-	matrix.load( "base.css", function () {
+	matrix( "base.css").done( function () {
 		var color = $( "#testcss" ).css( "color" );
 		var fontSize = $( "#testcss" ).css( "font-size" );
 		equal( color, "rgb(255, 0, 0)" );
@@ -292,12 +291,12 @@ asyncTest( "css load and release test", function () {
 
 asyncTest( "css dependencies test", function () {
 
-	matrix.baseUrl = "unit/";
+	matrix.resourceBaseUrl = "unit/";
 
 	var _color = $( "#testcss" ).css( "color" );
 	var _fontSize = $( "#testcss" ).css( "font-size" );
 
-	matrix.load( "child.css", function () {
+	matrix( "child.css").done( function () {
 		var color = $( "#testcss" ).css( "color" );
 		var fontSize = $( "#testcss" ).css( "font-size" );
 		equal( color, "rgb(255, 0, 0)", "color is defined in base.css" );

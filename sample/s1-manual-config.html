@@ -6,12 +6,14 @@
 
 	<link rel="stylesheet" href="css/demos.css">
 
-	<script src="../jquery.js"></script>
-	<script src="../src/matrix.core.js"></script>
-	<script src="../src/matrix.module.js"></script>
-	<script src="../src/matrix.js.js"></script>
-	<script src="../src/matrix.css.js"></script>
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script src="../dist/matrix.debug.js"></script>
+	<script src="js/matrix/config.js"></script>
 
+	<script>
+		//if there is error use this line
+		//matrix.resourceBaseUrl = "js/";
+	</script>
 
 	<script>
 
@@ -47,10 +49,10 @@
 				"dialog.module" : "ui.core.css, ui.theme.module, ui.dialog.js"
 			} );
 
-			//matrix.load( "ui.core.css, ui.redmond.css, ui.dialog.js", function () {
-			matrix.load( "dialog.module", function () {
+			//matrix( "ui.core.css, ui.redmond.css, ui.dialog.js", function () {
+			matrix( "dialog.module" ).done( function () {
 				$( "#linkDialog" ).click( function() {
-					$( "#dialog" ).dialog();
+					$( "<h1>hello</h1>" ).dialog();
 					return false;
 				} );
 

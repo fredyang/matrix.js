@@ -12,10 +12,7 @@ date=$(shell git log -1 --pretty=format:%ad)
 
 src_file = ${src_dir}/head.txt\
 			${src_dir}/matrix.core.js\
-			${src_dir}/matrix.module.js\
-			${src_dir}/matrix.js.js\
-			${src_dir}/matrix.css.js
-
+			${src_dir}/matrix.defaultHandlers.js
 
 out_js = ${dist_dir}/matrix.js
 debug_js = ${dist_dir}/matrix.debug.js

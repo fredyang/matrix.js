@@ -1,4 +1,4 @@
-[jquery-matrix](http://blog.semanticsworks.com/p/jquery-matrix-library.html) - a smart loader
+[jquery-matrix](http://blog.semanticsworks.com/p/matrixjs-javascript-library.html) - a smart loader
 ==================================================
 
 What you need to build your own jquery-matrix
@@ -22,4 +22,4 @@ To remove all build files, type 'make clean'
 
 Questions?
 ----------
-Please log your issue at https://github.com/fredyang/jquery-matrix/issues
+Please log your issue at https://github.com/fredyang/matrix.js/issues

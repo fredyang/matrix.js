@@ -6,10 +6,7 @@
 
 		//add url method
 		url: function ( resourceKey ) {
-
-			var appName = matrix.resourceName( resourceKey )
-
-			return matrix.fullUrl( matrix.baseUrl + "app/" + appName + ".js" );
+			return matrix.resourceBaseUrl + "app/" + matrix.resourceName( resourceKey ) + ".js";
 		}
 
 	} );
@@ -23,7 +20,7 @@
 
 		var appDefer = $.Deferred();
 		var appPromise = appDefer.promise();
-		appPromise.defer = _promise.defer;
+		appPromise.parentDefer = _promise.parentDefer;
 
 		_promise.done( function () {
 			var appContent = window[appName].load();

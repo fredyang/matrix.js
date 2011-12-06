@@ -7,35 +7,33 @@
 	<link rel="stylesheet" href="css/demos.css">
 	<style type="text/css">
 		.module {
-			display:none;
+			display: none;
 		}
 	</style>
 
-	<script src="../jquery.js"></script>
-	<script src="../src/matrix.core.js"></script>
-
-	<!-- core handler registration -->
-	<script src="../src/matrix.module.js"></script>
-	<script src="../src/matrix.js.js"></script>
-	<script src="../src/matrix.css.js"></script>
-
-	<!--add resource handler-->
-	<script src="js/matrix/matrix.uijs.js"></script>
-	<script src="js/matrix/matrix.uicss.js"></script>
-	<script src="js/matrix/matrix.uitheme.js"></script>
-
-	<!-- config file -->
-	<script src="js/matrix/matrix.config.js"></script>
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script src="../dist/matrix.debug.js"></script>
+	<script src="js/matrix/config.js"></script>
 
 	<script>
-		var moduleName;
+		//if there is error use this line
+		//matrix.resourceBaseUrl = "js/";
+	</script>
 
-		$( function() {
+
+	<!--optional add resource handler, if it is not loaded, they will be automatically loaded-->
+	<!--<script src="js/matrix/matrix.uijs.js"></script>-->
+	<!--<script src="js/matrix/matrix.uicss.js"></script>-->
+	<!--<script src="js/matrix/matrix.uitheme.js"></script>-->
+
+
+	<script>
+	$( function() {
 
 			$( "#module" ).change( function ( e ) {
 				if ( this.value ) {
-					moduleName = this.value;
-					matrix.load( moduleName + ".module", function () {
+					var moduleName = this.value;
+					matrix( moduleName + ".module" ).done( function () {
 						$( "#" + moduleName )[moduleName]().show();
 					} )
 				}
@@ -64,7 +62,6 @@
 		<option>redmond</option>
 		<option>smoothness</option>
 	</select>
-
 
 
 	<div id="dialog" title="Basic dialog" class="module">

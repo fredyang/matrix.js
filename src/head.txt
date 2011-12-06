@@ -1,6 +1,6 @@
 /*!
- * matrix JavaScript Library v@version
- * http://blog.semanticsworks.com/p/jquery-matrix-library.html
+ * matrix.js JavaScript Library v@version
+ * http://blog.semanticsworks.com/p/matrixjs-javascript-library.html
  *
  * Copyright 2011, Fred Yang
  * Dual licensed under the MIT or GPL Version 2 licenses.
