@@ -7,7 +7,7 @@
  * http://www.opensource.org/licenses/mit-license
  * http://www.opensource.org/licenses/gpl-2.0
  *
- * Date: Sat Dec 17 08:09:37 2011 -0500
+ * Date: Sat Dec 17 10:16:23 2011 -0500
  *///
 (function ( $, undefined ) {
 
@@ -327,7 +327,7 @@
 				if ( arguments.length == 1 ) {
 
 					var handler = getHandler( resourceKey );
-					return handler.depend ? handler.depend( resourceKey ).concat( _dependencies[resourceKey] ) :
+					return handler.depend ? handler.depend( resourceKey ) + (_dependencies[resourceKey] || "" ) :
 						_dependencies[resourceKey];
 
 				} else {
