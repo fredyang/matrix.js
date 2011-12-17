@@ -168,7 +168,7 @@
 		// release(resourceString)
 		// release(resourceArray)
 		//release method does not care about dependencies, it just remove reference
-		release: function( resourceArray ) {
+		release: function( resourceArray, force ) {
 			var i,
 				resourceKey,
 				dependencies,
@@ -195,16 +195,16 @@
 
 				handler = getHandler( resourceKey );
 
-				if ( --promise.refCount === 0 ) {
+				if ( force || (--promise.refCount === 0 ) ) {
 
-					handler.release && handler.release( resourceKey );
+					handler.release && handler.release( resourceKey, force );
 
 					//delete the promises associated with the resource
 					matrix.promises( resourceKey, undefined );
 
 					if ( (dependencies = matrix.depend( resourceKey )) ) {
 
-						matrix.release( dependencies );
+						matrix.release( dependencies, force );
 					}
 				}
 
@@ -212,7 +212,7 @@
 
 				//releaseAll
 				for ( i = 0; i < resourceArray.length; i ++ ) {
-					matrix.release( resourceArray[i] );
+					matrix.release( resourceArray[i], force );
 				}
 
 			}
@@ -326,19 +326,30 @@
 
 			} else {
 
+				_dependencies[resourceKey] = dependencies;
+
 				//if caller ask for reload and the resources has been loaded
 				//then we need to reload
-				var needToReload = reload && matrix.promises( resourceKey );
-
-				if ( needToReload ) {
-					matrix.release( resourceKey, true );
-					_dependencies[resourceKey] = dependencies;
-					return matrix( resourceKey );
-				} else {
-					return (_dependencies[resourceKey] = dependencies);
-				}
+				reload && matrix.reload( resourceKey );
 			}
 
+		},
+
+		reload: function ( resourceKey ) {
+
+			if ( matrix.promises( resourceKey ) ) {
+				var _oldPromises = $.extend( {}, _promises );
+				matrix.release( resourceKey, true );
+
+				return matrix( resourceKey ).done( function () {
+					//copy the refCounts in the oldPromises to the refCounts in the _promises
+					for ( var key in _oldPromises ) {
+						if ( _promises[key] && _oldPromises[key] ) {
+							_promises[key].refCount = _oldPromises[key].refCount;
+						}
+					}
+				} );
+			}
 		},
 
 		loadResourceHandlers: function ( handlerNames ) {
