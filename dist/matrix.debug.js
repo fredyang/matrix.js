@@ -7,7 +7,7 @@
  * http://www.opensource.org/licenses/mit-license
  * http://www.opensource.org/licenses/gpl-2.0
  *
- * Date: Tue Dec 6 01:29:26 2011 -0500
+ * Date: Sat Dec 17 08:09:37 2011 -0500
  *///
 (function ( $, undefined ) {
 
@@ -325,7 +325,11 @@
 
 			if ( dependencies === undefined ) {
 				if ( arguments.length == 1 ) {
-					return _dependencies[resourceKey];
+
+					var handler = getHandler( resourceKey );
+					return handler.depend ? handler.depend( resourceKey ).concat( _dependencies[resourceKey] ) :
+						_dependencies[resourceKey];
+
 				} else {
 					delete _dependencies[resourceKey];
 				}
@@ -664,7 +668,7 @@
 	matrix.addHandler( "handler", "js", {
 
 		url: function ( resourceKey ) {
-			return matrix.resourceBaseUrl + matrix.matrixBaseUrl + "matrix." + matrix.resourceName( resourceKey ) + ".js";
+			return matrix.resourceBaseUrl + matrix.matrixBaseUrl + "type." + matrix.resourceName( resourceKey ) + ".js";
 		}
 
 	} );

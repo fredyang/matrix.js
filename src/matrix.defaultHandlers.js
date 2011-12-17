@@ -103,7 +103,7 @@
 	matrix.addHandler( "handler", "js", {
 
 		url: function ( resourceKey ) {
-			return matrix.resourceBaseUrl + matrix.matrixBaseUrl + "matrix." + matrix.resourceName( resourceKey ) + ".js";
+			return matrix.resourceBaseUrl + matrix.matrixBaseUrl + "type." + matrix.resourceName( resourceKey ) + ".js";
 		}
 
 	} );

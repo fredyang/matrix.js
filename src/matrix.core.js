@@ -315,7 +315,11 @@
 
 			if ( dependencies === undefined ) {
 				if ( arguments.length == 1 ) {
-					return _dependencies[resourceKey];
+
+					var handler = getHandler( resourceKey );
+					return handler.depend ? handler.depend( resourceKey ).concat( _dependencies[resourceKey] ) :
+						_dependencies[resourceKey];
+
 				} else {
 					delete _dependencies[resourceKey];
 				}

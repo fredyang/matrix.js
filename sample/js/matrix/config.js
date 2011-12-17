@@ -13,7 +13,7 @@ $.each(
 		var resourceKey = value + ".module";
 		var depends = value + ".uijs, uicss.module";
 
-		//matrix.depend("accordion", "accordion.uijs, uicss.module");
+		//matrix.depend("accordion.module", "accordion.uijs, uicss.module");
 		matrix.depend( resourceKey, depends );
 	}
 );
@@ -22,7 +22,7 @@ $.each(
 
 
 matrix.debug();
-matrix.resourceBaseUrl = "/sample/js/";
+matrix.resourceBaseUrl = "js/";
 
 
 //optionally register your resource handler
