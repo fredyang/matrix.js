@@ -1,13 +1,13 @@
 /*!
  * matrix.js JavaScript Library v0.2pre
- * http://blog.semanticsworks.com/p/matrixjs-javascript-library.html
+ * http://semanticsworks.com
  *
  * Copyright 2011, Fred Yang
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * http://www.opensource.org/licenses/mit-license
  * http://www.opensource.org/licenses/gpl-2.0
  *
- * Date: Sat Dec 17 10:16:23 2011 -0500
+ * Date: Sat Dec 17 14:31:08 2011 -0500
  *///
 (function ( $, undefined ) {
 
@@ -178,7 +178,7 @@
 		// release(resourceString)
 		// release(resourceArray)
 		//release method does not care about dependencies, it just remove reference
-		release: function( resourceArray ) {
+		release: function( resourceArray, force ) {
 			var i,
 				resourceKey,
 				dependencies,
@@ -205,16 +205,16 @@
 
 				handler = getHandler( resourceKey );
 
-				if ( --promise.refCount === 0 ) {
+				if ( force || (--promise.refCount === 0 ) ) {
 
-					handler.release && handler.release( resourceKey );
+					handler.release && handler.release( resourceKey, force );
 
 					//delete the promises associated with the resource
 					matrix.promises( resourceKey, undefined );
 
 					if ( (dependencies = matrix.depend( resourceKey )) ) {
 
-						matrix.release( dependencies );
+						matrix.release( dependencies, force );
 					}
 				}
 
@@ -222,7 +222,7 @@
 
 				//releaseAll
 				for ( i = 0; i < resourceArray.length; i ++ ) {
-					matrix.release( resourceArray[i] );
+					matrix.release( resourceArray[i], force );
 				}
 
 			}
@@ -336,19 +336,30 @@
 
 			} else {
 
+				_dependencies[resourceKey] = dependencies;
+
 				//if caller ask for reload and the resources has been loaded
 				//then we need to reload
-				var needToReload = reload && matrix.promises( resourceKey );
-
-				if ( needToReload ) {
-					matrix.release( resourceKey, true );
-					_dependencies[resourceKey] = dependencies;
-					return matrix( resourceKey );
-				} else {
-					return (_dependencies[resourceKey] = dependencies);
-				}
+				reload && matrix.reload( resourceKey );
 			}
 
+		},
+
+		reload: function ( resourceKey ) {
+
+			if ( matrix.promises( resourceKey ) ) {
+				var _oldPromises = $.extend( {}, _promises );
+				matrix.release( resourceKey, true );
+
+				return matrix( resourceKey ).done( function () {
+					//copy the refCounts in the oldPromises to the refCounts in the _promises
+					for ( var key in _oldPromises ) {
+						if ( _promises[key] && _oldPromises[key] ) {
+							_promises[key].refCount = _oldPromises[key].refCount;
+						}
+					}
+				} );
+			}
 		},
 
 		loadResourceHandlers: function ( handlerNames ) {
@@ -546,29 +557,7 @@
 
 //
 
-	matrix.addHandler( "module", {
-		//load method just load the resource it use
-		//don't care about its dependencies
-		load: function ( resourceKey ) {
-			var dependencies = matrix.depend( resourceKey );
-			var defer = $.Deferred();
-
-			if ( dependencies ) {
-				matrix( dependencies ).done( function () {
-					defer.resolve();
-				} );
-			} else {
-				defer.resolve();
-			}
-
-			return defer.promise();
-		},
-
-		url: function ( resourceKey ) {
-			return resourceKey;
-		}
-	} );
-
+	//there four built-in handlers, module, js, handler, css
 	var rReleaseMethod = /\s*\/\*\s*release\s*:\s*([\w\W]+?)\s*\*\/\w*$/;
 
 	matrix.addHandler( "js", {
@@ -619,14 +608,6 @@
 		}
 	} );
 
-	matrix.addHandler( "handler", "js", {
-
-		url: function ( resourceKey ) {
-			return matrix.resourceBaseUrl + matrix.matrixBaseUrl + "type." + matrix.resourceName( resourceKey ) + ".js";
-		}
-
-	} );
-
 	matrix.addHandler( "css", {
 		load: matrix.buildLoad(
 			//fnIsResourceStaticLinked
@@ -666,6 +647,37 @@
 					return this.href === url && $( this ).attr( 'matrix' );
 				} ).remove();
 		}
+	} );
+
+	matrix.addHandler( "module", {
+		//load method just load the resource it use
+		//don't care about its dependencies
+		load: function ( resourceKey ) {
+			var dependencies = matrix.depend( resourceKey );
+			var defer = $.Deferred();
+
+			if ( dependencies ) {
+				matrix( dependencies ).done( function () {
+					defer.resolve();
+				} );
+			} else {
+				defer.resolve();
+			}
+
+			return defer.promise();
+		},
+
+		url: function ( resourceKey ) {
+			return resourceKey;
+		}
+	} );
+
+	matrix.addHandler( "handler", "js", {
+
+		url: function ( resourceKey ) {
+			return matrix.resourceBaseUrl + matrix.matrixBaseUrl + "handle." + matrix.resourceName( resourceKey ) + ".js";
+		}
+
 	} );
 
 })( jQuery );

@@ -11,13 +11,8 @@
 
 	<script type="text/javascript" src="../../jquery.js"></script>
 	<script type="text/javascript" src="../../src/matrix.core.js"></script>
-	<script type="text/javascript" src="../../src/matrix.module.js"></script>
-	<script type="text/javascript" src="../../src/matrix.js.js"></script>
-	<script type="text/javascript" src="../../src/matrix.css.js"></script>
-
-
-	<script src="../js/matrix/type.jqueryui.js"></script>
-
+	<script type="text/javascript" src="../../src/matrix.handlers.js"></script>
+	<script src="../js/matrix/handle.jqueryui.js"></script>
 	<script type="text/javascript" src="../js/matrix/config.js"></script>
 
 	<script>
@@ -26,7 +21,7 @@
 
 			matrix.resourceBaseUrl = "../js/";
 			//the following is correct, but more expressive
-			matrix( "dialog.module" ).done( function () {
+			matrix( "dialog.jqueryui" ).done( function () {
 
 				$( "#linkDialog" ).one( "click", function() {
 					var link = $( this );

@@ -22,20 +22,22 @@
 
 
 	<!--optional add resource handler, if it is not loaded, they will be automatically loaded-->
-	<!--<script src="js/matrix/matrix.jqueryui_js.js"></script>-->
-	<!--<script src="js/matrix/matrix.jqueryui_css.js"></script>-->
-	<!--<script src="js/matrix/matrix.jqueryui_theme.js"></script>-->
+	<!--<script src="js/matrix/matrix.jqueryui.js"></script>-->
 
 
 	<script>
-	$( function() {
+		$( function() {
 
 			$( "#module" ).change( function ( e ) {
 				if ( this.value ) {
 					var moduleName = this.value;
-					matrix( moduleName + ".jqueryui" ).done( function () {
+					if ( $.fn[moduleName] ) {
 						$( "#" + moduleName )[moduleName]().show();
-					} )
+					} else {
+						matrix( moduleName + ".jqueryui" ).done( function () {
+							$( "#" + moduleName )[moduleName]().show();
+						} )
+					}
 				}
 			} );
 

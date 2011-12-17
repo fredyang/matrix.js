@@ -3,31 +3,7 @@
 (function( $, matrix ) {
 	//#end_debug
 
-	matrix.addHandler( "module", {
-		//load method just load the resource it use
-		//don't care about its dependencies
-		load: function ( resourceKey ) {
-			//matrix.log("loading module : " + resource)
-			var dependencies = matrix.depend( resourceKey );
-			var defer = $.Deferred();
-
-			if ( dependencies ) {
-				//matrix.log("\tloading dependencies : " + dependencies);
-				matrix( dependencies ).done( function () {
-					defer.resolve();
-				} );
-			} else {
-				defer.resolve();
-			}
-
-			return defer.promise();
-		},
-
-		url: function ( resourceKey ) {
-			return resourceKey;
-		}
-	} );
-
+	//there four built-in handlers, module, js, handler, css
 	var rReleaseMethod = /\s*\/\*\s*release\s*:\s*([\w\W]+?)\s*\*\/\w*$/;
 
 	matrix.addHandler( "js", {
@@ -100,14 +76,6 @@
 		}
 	} );
 
-	matrix.addHandler( "handler", "js", {
-
-		url: function ( resourceKey ) {
-			return matrix.resourceBaseUrl + matrix.matrixBaseUrl + "type." + matrix.resourceName( resourceKey ) + ".js";
-		}
-
-	} );
-
 	matrix.addHandler( "css", {
 		load: matrix.buildLoad(
 			//fnIsResourceStaticLinked
@@ -148,6 +116,39 @@
 					return this.href === url && $( this ).attr( 'matrix' );
 				} ).remove();
 		}
+	} );
+
+	matrix.addHandler( "module", {
+		//load method just load the resource it use
+		//don't care about its dependencies
+		load: function ( resourceKey ) {
+			//matrix.log("loading module : " + resource)
+			var dependencies = matrix.depend( resourceKey );
+			var defer = $.Deferred();
+
+			if ( dependencies ) {
+				//matrix.log("\tloading dependencies : " + dependencies);
+				matrix( dependencies ).done( function () {
+					defer.resolve();
+				} );
+			} else {
+				defer.resolve();
+			}
+
+			return defer.promise();
+		},
+
+		url: function ( resourceKey ) {
+			return resourceKey;
+		}
+	} );
+
+	matrix.addHandler( "handler", "js", {
+
+		url: function ( resourceKey ) {
+			return matrix.resourceBaseUrl + matrix.matrixBaseUrl + "handle." + matrix.resourceName( resourceKey ) + ".js";
+		}
+
 	} );
 
 	//#debug

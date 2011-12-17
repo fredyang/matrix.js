@@ -2,9 +2,10 @@
 (function( $, matrix ) {
 
 	matrix.addHandler( "jqueryui", "module", {
+		//a moduleName.jqueryui depends on moduleName.jquery_js, core.jqueryui_css, jqueryui_theme.module
 		depend: function ( resourceKey ) {
-			var resourceName = matrix.resourceName( resourceKey );
-			return resourceName + ".jqueryui_js,core.jqueryui_css, jqueryui_theme.module";
+			var moduleName = matrix.resourceName( resourceKey );
+			return moduleName + ".jqueryui_js,core.jqueryui_css, jqueryui_theme.module";
 		}
 	} );
 
