@@ -317,7 +317,7 @@
 				if ( arguments.length == 1 ) {
 
 					var handler = getHandler( resourceKey );
-					return handler.depend ? handler.depend( resourceKey ).concat( _dependencies[resourceKey] ) :
+					return handler.depend ? handler.depend( resourceKey ) + (_dependencies[resourceKey] || "" ) :
 						_dependencies[resourceKey];
 
 				} else {
