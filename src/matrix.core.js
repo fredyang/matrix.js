@@ -479,7 +479,19 @@
 	$.extend( matrix, {
 
 		//return function (resourceKey)
-		promises: buildAccess( _promises, matrix.url ),
+		//normally the promiseKey of resource is url of the resource
+		//but sometimes, resource maybe not necessarily bind to an url of physical resource
+		//such as file, in that case, we can let the handler implement a function
+		//function promiseKey(resourceKey) { return "key"; }
+		promises: buildAccess( _promises, function /*getPromiseKey*/ ( resourceKey ) {
+			var handler = getHandler( resourceKey );
+			var fn = handler && handler.promiseKey;
+			if (fn) {
+				return fn( resourceKey );
+			} else {
+				return matrix.url( resourceKey );
+			}
+		} ),
 
 		fullUrl: function( relativeUrl ) {
 			dummyLink.href = rHttpOrRoot.test( relativeUrl ) ? relativeUrl :
@@ -514,7 +526,6 @@
 	//#debug
 	matrix.log = $.noop;
 	//#end_debug
-
 
 	accessUrl = buildAccess( _urls, undefined, matrix.fullUrl );
 
