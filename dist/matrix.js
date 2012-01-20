@@ -7,9 +7,9 @@
  * http://www.opensource.org/licenses/mit-license
  * http://www.opensource.org/licenses/gpl-2.0
  *
- * Date: Sat Dec 17 14:31:08 2011 -0500
+ * Date: Fri Jan 20 12:03:19 2012 -0500
  *///
-(function ( $, undefined ) {
+(function( $, undefined ) {
 
 	var _urls = {},
 		_promises = {},
@@ -37,7 +37,7 @@
 		matrix = window.matrix = function( holdReady, resourceGroup, dependencyInOrder ) {
 
 			var currentPromise;
-			if ( typeof holdReady !== "boolean" ) {
+			if (typeof holdReady !== "boolean") {
 				//by default it is false
 				dependencyInOrder = resourceGroup;
 				resourceGroup = holdReady;
@@ -49,11 +49,11 @@
 			//always save the current promise to previousPromise for use in andLoad
 			currentPromise = previousPromise = smartLoad( resourceGroup, dependencyInOrder );
 
-			if ( holdReady ) {
+			if (holdReady) {
 
 				$.holdReady( true );
 
-				currentPromise.done( function () {
+				currentPromise.done( function() {
 					$.ready( true );
 				} );
 			}
@@ -61,23 +61,23 @@
 			return currentPromise;
 		};
 
-	function smartLoad( resourceGroup, dependencyInOrder ) {
+	function smartLoad ( resourceGroup, dependencyInOrder ) {
 
 		var i,
 			keys;
 
-		if ( typeof resourceGroup === "string" ) {
+		if (typeof resourceGroup === "string") {
 
-			if ( dependencyInOrder ) {
+			if (dependencyInOrder) {
 				//create dependency in order
 				keys = split( resourceGroup );
-				for ( i = 0; i < keys.length; i ++ ) {
-					if ( i === 0 ) {
-						if ( !matrix.depend( keys [i] ) ) {
+				for (i = 0; i < keys.length; i++) {
+					if (i === 0) {
+						if (!matrix.depend( keys [i] )) {
 							matrix.depend( keys [i], null );
 						}
 					}
-					if ( i < keys.length - 1 ) {
+					if (i < keys.length - 1) {
 						matrix.depend( keys[i + 1], keys[i] );
 					}
 				}
@@ -87,7 +87,7 @@
 
 			return loadInParallel( resourceGroup );
 
-		} else if ( $.isArray( resourceGroup ) ) {
+		} else if ($.isArray( resourceGroup )) {
 
 			//if it is resourceArray, load one after previous is completely loaded
 			return loadInSerial( resourceGroup );
@@ -102,20 +102,20 @@
 	//be used load other resource when current promise finished
 	//the thenLoad method is a smartLoad method, use the same way in which
 	//you call matrix
-	function decoratePromise( promise ) {
+	function decoratePromise ( promise ) {
 		var nextDefer = $.Deferred();
 
-		promise.thenLoad = function () {
+		promise.thenLoad = function() {
 			var loadArguments = slice.call( arguments );
-			promise.done( function () {
-				matrix.apply( null, loadArguments ).done( function ( content ) {
+			promise.done( function() {
+				matrix.apply( null, loadArguments ).done( function( content ) {
 					nextDefer.resolve( content );
 				} );
 			} );
 			return decoratePromise( nextDefer.promise() );
 		};
 		//TODO: test promise.andLoad function
-		promise.andLoad = function () {
+		promise.andLoad = function() {
 			var oldPendingPromise = previousPromise;
 			var currentPromise = matrix.apply( null, arguments );
 			return decoratePromise( $.when( currentPromise, oldPendingPromise ) );
@@ -125,16 +125,16 @@
 	}
 
 	//resourceString is like "a.js, b.css, c.tmpl"
-	function loadInParallel( resourceString ) {
+	function loadInParallel ( resourceString ) {
 		var promises = [],
 			promise,
 			resourceArray = split( resourceString );
 
-		if ( resourceArray.length === 1 ) {
+		if (resourceArray.length === 1) {
 			promise = tryLoadSingleResource( resourceArray[0] );
 		}
 		else {
-			for ( var i = 0; i < resourceArray.length; i++ ) {
+			for (var i = 0; i < resourceArray.length; i++) {
 				promises.push( tryLoadSingleResource( resourceArray[i] ) );
 			}
 			promise = $.when.apply( $, promises );
@@ -148,19 +148,19 @@
 	//or ["a.js,b.css", ["c.tmpl", "d.tmpl"], "e.css"] and so on
 	//it serial load the top level resource unit, within each resource unit, use smart
 	//loader matrix
-	function loadInSerial( resources ) {
+	function loadInSerial ( resources ) {
 		var promise,
 			i = 0,
 			resourceKey;
-		if ( typeof resources === "string" ) {
+		if (typeof resources === "string") {
 			resources = split( resources );
 		}
 
-		for ( i = 0; i < resources.length; i ++ ) {
+		for (i = 0; i < resources.length; i++) {
 
 			resourceKey = resources[i];
 
-			if ( i === 0 ) {
+			if (i === 0) {
 				//we don't know whether resourceKey is a string or array
 				promise = smartLoad( resourceKey );
 			} else {
@@ -185,13 +185,13 @@
 				handler,
 				promise;
 
-			if ( typeof resourceArray === "string" ) {
+			if (typeof resourceArray === "string") {
 
 				resourceArray = split( resourceArray );
 			}
 
 			//if there is only one resource
-			if ( resourceArray.length === 1 ) {
+			if (resourceArray.length === 1) {
 
 				resourceKey = resourceArray[0];
 
@@ -199,20 +199,20 @@
 
 				//make sure it will not throw exception when
 				// releasing some resource which is not in page
-				if ( !promise || promise.preload ) {
+				if (!promise || promise.preload) {
 					return;
 				}
 
 				handler = getHandler( resourceKey );
 
-				if ( force || (--promise.refCount === 0 ) ) {
+				if (force || (--promise.refCount === 0 )) {
 
 					handler.release && handler.release( resourceKey, force );
 
 					//delete the promises associated with the resource
 					matrix.promises( resourceKey, undefined );
 
-					if ( (dependencies = matrix.depend( resourceKey )) ) {
+					if ((dependencies = matrix.depend( resourceKey ))) {
 
 						matrix.release( dependencies, force );
 					}
@@ -221,31 +221,29 @@
 			} else {
 
 				//releaseAll
-				for ( i = 0; i < resourceArray.length; i ++ ) {
+				for (i = 0; i < resourceArray.length; i++) {
 					matrix.release( resourceArray[i], force );
 				}
 
 			}
 		},
 
-		url: function ( resourceKey, url ) {
+		url: function( resourceKey, url ) {
 
-			if ( typeof resourceKey === "string" ) {
+			if (typeof resourceKey === "string") {
 				var handler = getHandler( resourceKey );
-				if ( handler.url ) {
+				if (handler.url) {
 					//because it by pass the following, handler.url function should resolve
 					//the resulted url relative to the location.href
 					return handler.url( resourceKey );
 				}
 			}
 
-			if ( !_urls[resourceKey] && url === undefined ) {
+			if (!_urls[resourceKey] && url === undefined) {
 				//if resource's url is not in database
 				//and user is trying to get it, register it first, then return the result
 				//the default strategy of url resolving is use matrix.baseUrl + resourceKey
-				return accessUrl( resourceKey,
-					rHttpOrRoot.test( resourceKey ) ? resourceKey :
-						matrix.resourceBaseUrl + resourceKey );
+				return accessUrl( resourceKey, resourceKey );
 
 			} else {
 
@@ -259,10 +257,10 @@
 		 * it returns null, meaning the it has no dependencies
 		 * or an array of resource keys
 		 */
-		parse: function ( resourceKey, sourceCode ) {
+		parse: function( resourceKey, sourceCode ) {
 			var depends,
 				handler = getHandler( resourceKey );
-			if ( handler.parse ) {
+			if (handler.parse) {
 
 				depends = handler.parse( resourceKey, sourceCode );
 
@@ -272,35 +270,34 @@
 				depends = (depends && depends[1] ) || null;
 			}
 
-			matrix.depend( resourceKey, depends );
 			return depends;
 		}
 
 	} );
 
-	function buildAccess( items, convertKey, convertValue ) {
+	function buildAccess ( items, convertKey, convertValue ) {
 		//access method to array
-		return function access( key, value ) {
+		return function access ( key, value ) {
 
-			if ( typeof key === "object" ) {
-				for ( var k in key ) {
+			if (typeof key === "object") {
+				for (var k in key) {
 					access( k, key[k] );
 				}
 				return items;
 			}
 
-			if ( convertKey ) {
+			if (convertKey) {
 				key = convertKey( key );
 			}
-			if ( value === undefined ) {
-				if ( arguments.length === 1 ) {
+			if (value === undefined) {
+				if (arguments.length === 1) {
 					return items[key];
 
 				} else {
 					delete items[key];
 				}
 			} else {
-				if ( convertValue ) {
+				if (convertValue) {
 					value = convertValue( value, key );
 				}
 				return (items[key] = value);
@@ -311,20 +308,20 @@
 	// members to configure matrix
 	$.extend( matrix, {
 
-		depend: function ( resourceKey, dependencies, reload ) {
+		depend: function( resourceKey, dependencies, reload ) {
 
-			if ( typeof resourceKey === "object" ) {
+			if (typeof resourceKey === "object") {
 				reload = dependencies;
-				for ( var key in resourceKey ) {
-					if ( resourceKey.hasOwnProperty( key ) ) {
+				for (var key in resourceKey) {
+					if (resourceKey.hasOwnProperty( key )) {
 						matrix.depend( key, resourceKey[key], reload );
 					}
 				}
 				return;
 			}
 
-			if ( dependencies === undefined ) {
-				if ( arguments.length == 1 ) {
+			if (dependencies === undefined) {
+				if (arguments.length == 1) {
 
 					var handler = getHandler( resourceKey );
 					return handler.depend ? handler.depend( resourceKey ) + (_dependencies[resourceKey] || "" ) :
@@ -345,16 +342,16 @@
 
 		},
 
-		reload: function ( resourceKey ) {
+		reload: function( resourceKey ) {
 
-			if ( matrix.promises( resourceKey ) ) {
+			if (matrix.promises( resourceKey )) {
 				var _oldPromises = $.extend( {}, _promises );
 				matrix.release( resourceKey, true );
 
-				return matrix( resourceKey ).done( function () {
+				return matrix( resourceKey ).done( function() {
 					//copy the refCounts in the oldPromises to the refCounts in the _promises
-					for ( var key in _oldPromises ) {
-						if ( _promises[key] && _oldPromises[key] ) {
+					for (var key in _oldPromises) {
+						if (_promises[key] && _oldPromises[key]) {
 							_promises[key].refCount = _oldPromises[key].refCount;
 						}
 					}
@@ -362,9 +359,9 @@
 			}
 		},
 
-		loadResourceHandlers: function ( handlerNames ) {
+		loadResourceHandlers: function( handlerNames ) {
 			matrix( $.map( split( handlerNames ),
-				function ( value ) {
+				function( value ) {
 					return value + ".handler";
 				} ).toString() );
 		},
@@ -384,7 +381,7 @@
 		matrixBaseUrl: "matrix/"
 	} );
 
-	function isCrossDomain( url ) {
+	function isCrossDomain ( url ) {
 		var parts = rUrl.exec( url.toLowerCase() );
 		return !!( parts &&
 		           ( parts[ 1 ] != ajaxLocParts[ 1 ] || parts[ 2 ] != ajaxLocParts[ 2 ] ||
@@ -395,8 +392,8 @@
 
 	//members used to create new handlers
 	$.extend( matrix, {
-		addHandler: function ( name, baseName, extension ) {
-			if ( typeof baseName === "object" ) {
+		addHandler: function( name, baseName, extension ) {
+			if (typeof baseName === "object") {
 				extension = baseName;
 				baseName = null;
 			}
@@ -411,24 +408,27 @@
 		 * @param fnBuildEvaluate, is a function(resourceKey, url, sourceCode), which do some
 		 * pre-processing, and return a evaluate method
 		 */
-		buildLoad: function ( fnIsResourceStaticLinked, fnBuildEvaluate, fnCrossDomainFetch ) {
+		buildLoad: function( fnIsResourceStaticLinked, fnBuildEvaluate, fnCrossDomainFetch ) {
 
-			var fetch = function ( resourceKey, url, deepParse ) {
+			var fetch = function( resourceKey, url, deepParse ) {
 
 
-				if ( isCrossDomain( url ) ) {
-					fnCrossDomainFetch( url ).done( function ( content ) {
+				if (isCrossDomain( url )) {
+					fnCrossDomainFetch( url ).done( function( content ) {
 						matrix.promises( resourceKey ).parentDefer.resolve( content );
 					} );
 				} else {
-					$.get( url, null, null, "text" ).success( function ( sourceCode ) {
+					$.get( url, null, null, "text" ).success( function( sourceCode ) {
 						var evaluate = fnBuildEvaluate( resourceKey, url, sourceCode );
 
 						var dependencies = deepParse && matrix.parse( resourceKey, sourceCode );
 
-						if ( dependencies ) {
+						if (dependencies) {
 							//set dependencies so that it can be used in release method
-							matrix.depend( resourceKey, dependencies );
+							var existingDependencies = matrix.depend( resourceKey );
+							matrix.depend( resourceKey, existingDependencies ?
+								existingDependencies + "," + dependencies :
+								dependencies );
 
 							matrix( dependencies ).done( evaluate );
 
@@ -440,7 +440,7 @@
 
 			};
 
-			return function ( resourceKey ) {
+			return function( resourceKey ) {
 
 				var dependencies,
 					defer = $.Deferred(),
@@ -448,7 +448,7 @@
 					url = matrix.url( resourceKey );
 
 				var staticLinked = fnIsResourceStaticLinked( url );
-				if ( staticLinked ) {
+				if (staticLinked) {
 					promise.preload = true;
 					defer.resolve();
 					return promise;
@@ -460,12 +460,12 @@
 				promise.parentDefer = defer;
 				dependencies = matrix.depend( resourceKey );
 
-				if ( dependencies ) {
-					matrix( dependencies ).done( function () {
+				if (dependencies) {
+					matrix( dependencies ).done( function() {
 						fetch( resourceKey, url, false );
 					} );
 				}
-				else if ( dependencies === null ) {
+				else if (dependencies === null) {
 					//dependencies is explicitly set to null,
 					// meaning that the resource has no dependencies
 					fetch( resourceKey, url, false );
@@ -486,58 +486,73 @@
 	$.extend( matrix, {
 
 		//return function (resourceKey)
-		promises : buildAccess( _promises, matrix.url ),
+		//normally the promiseKey of resource is url of the resource
+		//but sometimes, resource maybe not necessarily bind to an url of physical resource
+		//such as file, in that case, we can let the handler implement a function
+		//function promiseKey(resourceKey) { return "key"; }
+		promises: buildAccess( _promises, function /*getPromiseKey*/ ( resourceKey ) {
+			var handler = getHandler( resourceKey );
+			var fn = handler && handler.promiseKey;
+			if (fn) {
+				return fn( resourceKey );
+			} else {
+				return matrix.url( resourceKey );
+			}
+		} ),
 
-		fullUrl: function ( relativeUrl ) {
-			dummyLink.href = relativeUrl;
+		fullUrl: function( relativeUrl ) {
+			dummyLink.href = rHttpOrRoot.test( relativeUrl ) ? relativeUrl :
+				matrix.resourceBaseUrl + relativeUrl;
 			return dummyLink.href;
 		},
 
-		resourceType: function ( resourceKey ) {
+		resourceType: function( resourceKey ) {
 			return rResourceType.exec( resourceKey )[1];
 		},
 
-		resourceName: function ( resourceKey ) {
+		resourceName: function( resourceKey ) {
 			return rResourceName.exec( resourceKey )[1];
 		},
 
-		debug: function () {
+		debug: function() {
 			//matrix.debug.enabled = true;
 			this._dependencies = _dependencies;
 			this._urls = _urls;
 			this._promises = _promises;
 			this._handlers = _handlers;
 		}
+
 	} );
+
 
 	accessUrl = buildAccess( _urls, undefined, matrix.fullUrl );
 
-	function split( text ) {
+	function split ( text ) {
 		var s = text.replace( rSpace, "" );
 		return s.split( rComma );
 	}
 
-	function getHandler( resourceKey ) {
+	function getHandler ( resourceKey ) {
 		return _handlers[matrix.resourceType( resourceKey )];
 	}
 
-	function tryLoadSingleResource( resourceKey ) {
+	function tryLoadSingleResource ( resourceKey ) {
 		var handler = getHandler( resourceKey );
-		if ( !handler ) {
+		if (!handler) {
 			return matrix( matrix.resourceType( resourceKey ) + ".handler" )
 				.thenLoad( resourceKey );
 		}
 		return loadSingleResource( resourceKey );
 	}
 
-	function loadSingleResource( resourceKey ) {
+	function loadSingleResource ( resourceKey ) {
 
 		var handler,
 			promise = matrix.promises( resourceKey );
-		if ( !promise ) {
+		if (!promise) {
 
 			handler = getHandler( resourceKey );
-			if ( !handler ) {
+			if (!handler) {
 				throw "There is no handler for resource type" + matrix.resourceType( resourceKey );
 			}
 			promise = handler.load( resourceKey );
@@ -548,7 +563,7 @@
 
 		//preload resource will never be counted for reference
 		//as we don't want that to be unloaded
-		if ( !promise.preload ) {
+		if (!promise.preload) {
 			promise.refCount = promise.refCount ? promise.refCount + 1 : 1;
 		}
 

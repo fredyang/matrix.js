@@ -260,7 +260,6 @@
 				depends = (depends && depends[1] ) || null;
 			}
 
-			matrix.depend( resourceKey, depends );
 			return depends;
 		}
 
@@ -418,7 +417,10 @@
 
 						if (dependencies) {
 							//set dependencies so that it can be used in release method
-							matrix.depend( resourceKey, dependencies );
+							var existingDependencies = matrix.depend( resourceKey );
+							matrix.depend( resourceKey, existingDependencies ?
+								existingDependencies + "," + dependencies :
+								dependencies );
 
 							//matrix.log("\tloading dependencies in manifest of " + resource + ":" + dependencies);
 							matrix( dependencies ).done( evaluate );
