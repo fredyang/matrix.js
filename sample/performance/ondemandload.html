@@ -5,32 +5,29 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8"/>
-	<title>on demand load</title>
+	<title>Load dialog widget on demand</title>
 
 	<link rel="stylesheet" href="../css/demos.css">
+    <script src="http://code.jquery.com/jquery-1.7.2.js"></script>
+	<script type="text/javascript" src="../../src/core.js"></script>
+	<script type="text/javascript" src="../../src/loaders.js"></script>
+	<script src="../js/matrix/widget.js"></script>
 
-	<script type="text/javascript" src="../../jquery.js"></script>
-	<script type="text/javascript" src="../../src/matrix.core.js"></script>
-	<script type="text/javascript" src="../../src/matrix.handlers.js"></script>
-	<script src="../js/matrix/handle.jqueryui.js"></script>
-
-	<script src="../js/matrix/handle.jqueryui.js"></script>
-
-	<script type="text/javascript" src="../js/matrix/config.js"></script>
 
 	<script>
 		$( function() {
-			var pageLoaded = (new Date);
 
-			matrix.resourceBaseUrl = "../js/";
+			var pageLoaded = (new Date);
+			matrix.hash( true );
+			matrix.baseUrl = "../js/";
 
 			$( "#linkDialog" ).one( "click", function() {
 				var link = $( this );
 				var startLoadDialog = new Date;
-				matrix( "dialog.jqueryui" ).done( function () {
+				matrix( "dialog.widget" ).done( function() {
 					$( "#dialog" ).dialog();
 					var dialogLoaded = (new Date);
-					$( "#dialogLoadtime" ).text( "dialog load time " + (dialogLoaded - startLoadDialog) + "ms" );
+					$( "#dialogLoadtime" ).text( "dialog on-demand load time " + (dialogLoaded - startLoadDialog) + "ms" );
 					link.remove();
 				} );
 			} );

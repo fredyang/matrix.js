@@ -1,7 +1,12 @@
-<!-- Depends: common.tmpl, utilities.tmpl -->
-<div id="hello">
-	<h1>Hello, ${$data}</h1>
-	{{tmpl "signature"}}
-	{{tmpl "bye"}}
-
-</div>
+<!--
+<@depends>
+	common.tmpl,
+	contact.tmpl
+</@depends>
+-->
+<script type="tmpl" id="hello">
+	{{tmpl "header"}}
+	<h1>Hello, ${$data} (render by hello.html template file)</h1>
+	{{tmpl "contact"}}
+	{{tmpl "footer"}}
+</script>

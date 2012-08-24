@@ -1,26 +1,31 @@
-(function ( $ ) {
+(function( $ ) {
 
-	var app = window["hello"] = {};
+	var app = {};
 	var content = $( "<h1>hello world!</h1>" );
-	var dummy = [];
+	var dummy;
 
-	app.load = function () {
-
-		for ( var i = 0; i < 999999; i ++ ) {
+	function createLotsMemory () {
+		dummy = [];
+		for (var i = 0; i < 999999; i++) {
 			dummy.push( (new Date).toString() );
 		}
 
-		for ( var i = 0; i < 999999; i ++ ) {
-			dummy.push( function () {
+		for (var i = 0; i < 999999; i++) {
+			dummy.push( function() {
 				return new Date();
 			} );
 		}
-
-		return content;
-	};
-	app.release = function () {
-		dummy = [];
-		content.remove();
 	}
+
+	app.load = function( view ) {
+		createLotsMemory();
+		$( view ).append( content );
+	};
+	app.release = function() {
+		dummy = null;
+		content.remove();
+	};
+
+	appStore.hello = app;
 
 })( jQuery );

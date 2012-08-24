@@ -1,0 +1,4 @@
+this.matrix || (function() {
+
+
+var defineMatrix = function (_, isAbort) {

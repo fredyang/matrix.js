@@ -5,18 +5,17 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8"/>
-	<title>pre load all ui scripts</title>
+	<title>Preload all widget</title>
 
 
 	<link rel="stylesheet" href="../css/demos.css"/>
-	<link rel="stylesheet" href="../js/jquery.ui/css/jquery.ui.redmond.css"/>
+	<link rel="stylesheet" href="../js/jquery.ui.all/ui-lightness/jquery-ui-1.8.18.custom.css"/>
 
-	<script type="text/javascript" src="../../jquery.js"></script>
-	<script src="../js/jquery.ui/jquery-ui-1.8.10.all.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.7.2.js"></script>
+	<script src="../js/jquery.ui.all/jquery-ui-1.8.18.custom.min.js"></script>
 	<script>
 		$( function() {
 			var pageLoaded = (new Date);
-
 			$( "#linkDialog" ).one( "click", function() {
 				var link = $( this );
 				var startLoadDialog = new Date;
@@ -40,7 +39,7 @@
 
 	<h1 id="dialogLoadtime"></h1>
 
-	<h1><a id="linkDialog" href="preload-all.html#">Click for dialog!</a></h1>
+	<h1><a id="linkDialog" href="staticLoaded-all.html#">Click for dialog!</a></h1>
 
 	<div id="dialog" title="Basic dialog" style="display:none;">
 		<p>This is the default dialog which is useful for displaying

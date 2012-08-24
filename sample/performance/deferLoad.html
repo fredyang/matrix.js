@@ -5,23 +5,21 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8"/>
-	<title>defer load all dialog script</title>
+	<title>Defer loading dialog widget</title>
 
 	<link rel="stylesheet" href="../css/demos.css">
-
-	<script type="text/javascript" src="../../jquery.js"></script>
-	<script type="text/javascript" src="../../src/matrix.core.js"></script>
-	<script type="text/javascript" src="../../src/matrix.handlers.js"></script>
-	<script src="../js/matrix/handle.jqueryui.js"></script>
-	<script type="text/javascript" src="../js/matrix/config.js"></script>
+    <script src="http://code.jquery.com/jquery-1.7.2.js"></script>
+	<script type="text/javascript" src="../../src/core.js"></script>
+	<script type="text/javascript" src="../../src/loaders.js"></script>
 
 	<script>
 		$( function() {
+			matrix.hash( true );
 			var pageLoaded = (new Date);
 
-			matrix.resourceBaseUrl = "../js/";
+			matrix.baseUrl = "../js/";
 			//the following is correct, but more expressive
-			matrix( "dialog.jqueryui" ).done( function () {
+			matrix( "dialog.widget" ).done( function() {
 
 				$( "#linkDialog" ).one( "click", function() {
 					var link = $( this );
@@ -33,7 +31,7 @@
 				} );
 
 				var scriptLoaded = (new Date);
-				$( "#result" ).text( "page load time:" + (pageLoaded - start) + "ms, loose ui script load time " + (scriptLoaded - pageLoaded) + "ms" );
+				$( "#result" ).text( "page load time:" + (pageLoaded - start) + "ms, time of defer loading dialog widget:" + (scriptLoaded - pageLoaded) + "ms" );
 			} );
 
 		} );

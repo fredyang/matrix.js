@@ -1,0 +1,29 @@
+
+defineMatrix = undefined;
+if (script && (isAbort || !script.readyState || /loaded|complete/.test(script.readyState))) {
+
+    // Handle memory leak in IE
+    script.onload = script.onreadystatechange = null;
+
+    // Remove the script
+    if (head && script.parentNode) {
+        head.removeChild(script);
+    }
+
+    // Dereference the script
+    script = undefined;
+    head = undefined;
+}
+};
+
+if (!this.jQuery) {
+	var script, head = document.head || document.getElementsByTagName("head")[0] || document.documentElement;
+	script = document.createElement( 'script' );
+	script.src = "http://code.jquery.com/jquery-latest.min.js";
+	script.onload = script.onreadystatechange = defineMatrix;
+	head.insertBefore(script, head.firstChild);
+} else {
+	defineMatrix();
+}
+
+}());

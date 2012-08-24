@@ -1,0 +1,27 @@
+<script type="tmpl" id="debugInfo">
+	<table>
+		<col style="width:30px">
+		<col style="width:200px">
+		<col style="width:80px">
+		<col style="width:200px">
+		<tr>
+			<th></th>
+			<th>Resource Key</th>
+			<th>RefCount</th>
+			<th>Url</th>
+		</tr>
+		{{each $data}}
+		<tr>
+			<td style="text-align:right">${$index + 1}</td>
+			<td>${$value.moduleId}</td>
+			<td>${$value.refCount}</td>
+			<td>${$value.url}</td>
+		</tr>
+		{{/each}}
+		<tr>
+			<td colspan="4">
+				<input class="release" type="button" value="release view"/>
+			</td>
+		</tr>
+	</table>
+</script>

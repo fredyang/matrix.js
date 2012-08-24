@@ -688,7 +688,7 @@ var JSLINT = (function () {
             deserialize : false,
             gc          : false,
             help        : false,
-            load        : false,
+            link        : false,
             loadClass   : false,
             print       : false,
             quit        : false,

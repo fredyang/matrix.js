@@ -1,2 +1,0 @@
-you should set host the project folder as root of website, because chrome as problem
-to access local file using ajax.

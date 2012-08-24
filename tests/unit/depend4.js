@@ -1,9 +1,5 @@
-/* Depends: depend3.js */
-
-(function (){
+// <@depends>depend3.js</@depends>
+// <@unload>delete window.depend4;</@unload>
+(function() {
 	window.depend4 = true;
 })();
-
-/* release:
-		delete window.depend4;
-*/
