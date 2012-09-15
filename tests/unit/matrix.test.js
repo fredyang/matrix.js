@@ -84,6 +84,7 @@ asyncTest( "get loader test", function() {
 			"if module id is moduleNmae.moduleType, " +
 			"by default the matrix will use moduleType to pick the module loader" );
 
+		debugger;
 		ok( moduleId == "test1.dummy" && result == resolvedDummyValue,
 			"when a module is resolved, the first value of callback is always the moduleId, " +
 			" the second value is optional, it can be the value returned from the load method." );

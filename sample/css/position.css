@@ -1,0 +1,101 @@
+/*add some positioning helper class*/
+/*don't overuse this helper class, it is for convenienc hack, use it when you just need it handy,
+but don't use them in combination, in that case you should combine them in a class*/
+.of_a {
+	overflow: auto;
+}
+
+.fly_l {
+	float: left !important;
+}
+
+.fly_r {
+	float: right !important;
+}
+
+.fly_n {
+	float: none !important;
+}
+
+.pin_tl {
+	top: 0;
+	left: 0;
+}
+
+.pin_tr {
+	top: 0;
+	right: 0;
+}
+
+.pin_t {
+	top:0;
+}
+
+.pin_b {
+	bottom: 0;
+}
+
+.pin_l {
+	left: 0;
+}
+
+.pin_r {
+	right: 0;
+}
+
+.pin_bl {
+	bottom: 0;
+	left: 0;
+}
+
+.pin_br {
+	bottom: 0;
+	right: 0;
+}
+
+.clear_all {
+	clear: both;
+}
+
+.clear_l {
+	clear:left;
+}
+
+.clear_r {
+	clear: right;
+}
+
+.abs {
+	position: absolute;
+}
+
+.rel {
+	position: relative;
+}
+
+/* horizontal alignment helper class*/
+/*center*/
+.txtC, table .txtC, table tr .txtC {
+	text-align: center;
+}
+
+.txtL, table .txtL, table tr .txtL {
+	text-align: left;
+}
+
+.txtR, table .txtR, table tr .txtR {
+	text-align: right;
+}
+
+/* vertical alignment */
+.txtT, table .txtT, table tr .txtT {
+	vertical-align: top;
+}
+
+.txtB, table .txtB, table tr .txtB {
+	vertical-align: bottom;
+}
+
+.txtM, table .txtM, table tr .txtM {
+	vertical-align: middle;
+}

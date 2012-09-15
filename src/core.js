@@ -63,7 +63,7 @@ jQuery.Deferred && (function( $, undefined ) {
 				} );
 			}
 
-			return rtnPromise.then( invokeLoadCallbacks, invokeFailCallbacks );
+			return rtnPromise.done( invokeLoadCallbacks ).fail( invokeFailCallbacks );
 		};
 
 	arrayPrototype.indexOf = arrayPrototype.indexOf || function( obj, start ) {
@@ -465,13 +465,19 @@ jQuery.Deferred && (function( $, undefined ) {
 						}
 					);
 				}
-				if (!defer.isResolved()) {
+				if (!isResolved( defer )) {
 					promise.defer = defer;
 				}
 			}
 			return promise;
 		};
 	}
+
+	var isResolved = $.Deferred().isResolved ? function( promise ) {
+		return promise.isResolved();
+	} : function( promise ) {
+		return promise.state() == "resolved";
+	};
 
 	function addHash ( url ) {
 		url = removeHash( url );
@@ -602,7 +608,7 @@ jQuery.Deferred && (function( $, undefined ) {
 
 				if (oldUrl != newUrl) {
 					var oldPromise = accessPromise( moduleId );
-					if (oldPromise && oldPromise.isResolved()) {
+					if (oldPromise && isResolved( oldPromise )) {
 						reload( moduleId, function() {
 							urlStore[moduleId] = newUrl;
 						} );
@@ -679,7 +685,7 @@ jQuery.Deferred && (function( $, undefined ) {
 				if (isDependencisDifferent( newStaticDependencies, oldStaticDependencies )) {
 
 					var oldPromise = accessPromise( moduleId );
-					if (oldStaticDependencies && oldPromise && oldPromise.isResolved()) {
+					if (oldStaticDependencies && oldPromise && isResolved( oldPromise )) {
 						reload( moduleId, function() {
 							dependencyStore[moduleId] = newStaticDependencies;
 						} );

@@ -1,0 +1,91 @@
+/** 
+ * Data Table 
+ * Allows you to align various table cells so that the
+ * alignment class can be placed on either the table, table row, or table cell
+ * Cell takes precedence over table row and table
+ * Table row takes precedence over table
+ */
+
+/*
+the .data class apply to the container of the table but not the table itself
+the reason is that we want to apply position:relative to the container of the table,
+to achieve flexible positioning for the table. You can add an additional div to wrap
+the table, or apply this to an existing container
+*/
+.data {
+	position: relative;
+	zoom: 1;
+	vertical-align: top; /*non-inheritable*/
+	text-align: left; /*inheritable*/
+
+	/*border-right:solid 1px transparent;*/
+	/* border fixes a FF2 bug which causes the data table to overlay its borders*/
+}
+
+.data table {
+	width: 100%;
+	/*this speed up the rendering of the table*/
+	table-layout: fixed;
+}
+
+.data th, .data td {
+	padding: 3px 5px;
+	vertical-align: top; /*non-inheritable*/
+}
+
+th, td {
+	/*vertical-align:top;*/
+}
+
+/*-----table skin ----------*/
+/* simple table @extends data table */
+.simpleTable {
+	/*padding: 20px;*/
+	padding-bottom: 10px;
+	padding-top: 10px;
+	/* doesn't this break stuff??? ok for win & mac on Safari,
+	FF, chrome, opera. OK on IE6/7/8.   */
+}
+
+.simpleTable table {
+	border: 1px solid #AE0345;
+}
+
+.simpleTable th, .simpleTable td {
+	border: 1px solid #4E7178;
+	/*border: 1px solid #AE0345;*/
+}
+
+.simpleTable thead tr {
+	/*background-color: #fff0f8;*/
+	background-color: #F1F7E2;
+}
+
+.simpleTable th {
+	color: #000;
+	font-weight: bold
+}
+
+/* specification table @extends data table */
+.spec {
+	padding: 10px;
+}
+
+.spec table {
+	border-top: 1px solid #e2e2e2;
+	border-bottom-color: #fff;
+	border-left: none;
+	border-right: none;
+}
+
+.spec th, .spec td {
+	border: 1px solid #e2e2e2;
+	border-width: 1px 0;
+	padding-left: 0;
+}
+
+.spec .odd, .spec .even {
+	background-color: #fff;
+}
+
+
