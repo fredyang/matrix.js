@@ -10,6 +10,8 @@
 <script src="../../../download/matrix.debug.js"></script>
 <script type="text/javascript">
 	matrix.baseUrl = "js/";
+	//we can package multiple modules into a package
+	//loading the package will load all the modules in the package
 	matrix.depends( "main.pack", "greeting.js, name.js" )
 	matrix( "main.pack" ).done( function() {
 		$( "body" ).append( "<h1>" + greeting + "," + name + "</h1>" );

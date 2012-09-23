@@ -3,13 +3,17 @@
 <html>
 <head>
 	<title></title>
-    <script src="../../analytic.js" type="text/javascript"></script>
+	<script src="../../analytic.js" type="text/javascript"></script>
 </head>
 <body>
 <script src="http://code.jquery.com/jquery-1.7.2.js"></script>
 <script src="../../../download/matrix.debug.js"></script>
 <script type="text/javascript">
 	matrix.baseUrl = "js/";
+	//the dependencies of message.js is defined in the file
+	//Existing code need to modified to be consumable by matrix.js
+	// Existing code need to wrap in the matrix.module()
+	//Although the change is minimum, it does depend on matrix.js
 	matrix( "message.js" ).done( function() {
 		$( "body" ).append( "<h1>" + message + "</h1>" );
 	} );

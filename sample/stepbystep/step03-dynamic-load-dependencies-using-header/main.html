@@ -11,6 +11,9 @@
 <script type="text/javascript" src="js/greeting.js"></script>
 <script type="text/javascript">
 	matrix.baseUrl = "js/";
+	//the dependencies of message.js is defined in the comment annotation
+	// of the file, the change is harmless and is garanteed not causing
+	// any side effect
 	matrix( "message.js" ).done( function() {
 		$( "body" ).append( "<h1>" + message + "</h1>" );
 	} );

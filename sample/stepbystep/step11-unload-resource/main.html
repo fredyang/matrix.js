@@ -17,6 +17,8 @@
 <script src="../../../download/matrix.debug.js"></script>
 <script type="text/javascript">
 	matrix.baseUrl = "asset/";
+	//main.js use comment annotation define the logic to unload itself
+	//if you can matrix.unload("main.js") will run the logic.
 	$( "#link" ).click( function() {
 		$( this ).attr( "disabled", true );
 		matrix( "main.js" );

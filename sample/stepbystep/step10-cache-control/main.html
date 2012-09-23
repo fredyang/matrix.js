@@ -3,12 +3,18 @@
 <html>
 <head>
 	<title></title>
-    <script src="../../analytic.js" type="text/javascript"></script>
+	<script src="../../analytic.js" type="text/javascript"></script>
 </head>
 <body>
 <script src="http://code.jquery.com/jquery-1.7.2.js"></script>
 <script src="../../../download/matrix.debug.js"></script>
 <script type="text/javascript">
+	//cache is enable by default
+	//if you want to disable previous cache, you can change the url by applying
+	//a query string token ?v=newVersionHash, so that browser will treat it as new resource
+	// we can apply a matrix.hash("newVersionHash") to do that.
+	//if we use matrix.hash(true), it will generate a new hash automatically, which
+	//effectively disable cache
 	matrix.hash( true );
 	matrix.baseUrl = "asset/";
 	matrix( "main.tmpl" ).done( function() {

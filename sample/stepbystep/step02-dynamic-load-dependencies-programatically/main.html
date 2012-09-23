@@ -10,6 +10,8 @@
 <script src="../../../download/matrix.debug.js"></script>
 <script type="text/javascript">
 	matrix.baseUrl = "js/";
+	//message.js 's dependencies is explicitly specified here,
+	// it depends on greeting.js and name.js
 	matrix.depends( "message.js", "greeting.js, name.js" );
 	matrix( "message.js" ).done( function() {
 		$( "body" ).append( "<h1>" + message + "</h1>" );

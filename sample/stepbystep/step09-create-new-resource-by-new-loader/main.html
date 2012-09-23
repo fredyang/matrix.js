@@ -10,6 +10,12 @@
 <script src="../../../download/matrix.debug.js"></script>
 <script type="text/javascript">
 	matrix.baseUrl = "asset/";
+	//resource type of "main.tmpl", "tmpl", it is handled by
+	//resource loader matrix_baseUrl/loader/tmpl.js
+	//you don't even need to load the loader first
+	//matrix.js will load it on demand, if the loader is not loaded
+	//and then it matrix.js will use it to load main.tmpl
+	//tmpl resource is a template
 	matrix( "main.tmpl" ).done( function() {
 		$.tmpl( "main", "hello,world" ).appendTo( "body" );
 	} );
