@@ -11,6 +11,7 @@
 <script type="text/javascript">
 	//matrix.hash( true );
 	matrix.baseUrl = "../js/";
+	//check loader ../js/loader/coffee.js
 	matrix( "bubble_sort.coffee" ).done( function() {
 		cf.eval( '$("body").append "<h1>CoffeeScript is alive.</h1>"' )
 		$( "body" ).append( "<p>bubble_sort([3, 2, 1]).join(' ') === '" + bubble_sort( [3, 2, 1] ).join( ' ' ) + "'</p>" );
