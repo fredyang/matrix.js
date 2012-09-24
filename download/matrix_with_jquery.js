@@ -1,9 +1,9 @@
 /*!
- * matrix.js JavaScript Library v0.3
+ * matrix.js JavaScript Library v0.4pre
  * © Fred Yang - http://semanticsworks.com
  * License: MIT (http://www.opensource.org/licenses/mit-license.php)
  *
- * Date: Sat Sep 15 17:13:28 2012 -0400
+ * Date: Mon Sep 24 13:18:12 2012 -0400
  */
 this.matrix || (function() {
 
@@ -147,7 +147,7 @@ jQuery.Deferred && (function( $, undefined ) {
 
 		} else if ($.isArray( moduleIds )) {
 
-			//if it is moduleIdArray, load one after previous is full loaded
+			//if it is moduleIdArray, load one after previous is fully loaded
 			return loadModuleInSerial( moduleIds );
 
 		}
@@ -331,7 +331,7 @@ jQuery.Deferred && (function( $, undefined ) {
 		return isCrossDomain( urlRelativeToBaseUrl ) ? dummyLink.href : addHash( dummyLink.href );
 	}
 
-	function buildLoadWithFilters ( filters ) {
+	function buildLoadFnWithFilters ( filters ) {
 
 		for (var key in filters) {
 			attachFilter( filters, key );
@@ -720,7 +720,7 @@ jQuery.Deferred && (function( $, undefined ) {
 				} );
 
 				if ($.isPlainObject( loader.load )) {
-					loader.load = buildLoadWithFilters( loader.load );
+					loader.load = buildLoadFnWithFilters( loader.load );
 				}
 
 				if (!$.isFunction( loader.load )) {
@@ -826,7 +826,10 @@ jQuery.Deferred && (function( $, undefined ) {
 			return rFileName.exec( moduleId )[1];
 		},
 
-		module: function( moduleId, dependencies, load, unload ) {
+		//define a module
+		//dependencies is optional
+		//load is the code of the module
+		define: function( moduleId, dependencies, load, unload ) {
 
 			if ($.isFunction( dependencies )) {
 				unload = load;
@@ -1065,6 +1068,7 @@ jQuery.Deferred && (function( $, undefined ) {
 	}
 
 	$.extend( true, loadFilters, {
+
 		staticLoaded: {
 			returnFalse: function() {
 				return false;
@@ -1085,11 +1089,14 @@ jQuery.Deferred && (function( $, undefined ) {
 					} ).length);
 			}
 		},
+
 		getSource: {
+			//this is default getSource method
 			getTextByAjax: function( moduleId ) {
 				return $.get( matrix.url( moduleId ), null, null, "text" );
 			}
 		},
+
 		compile: {
 			globalEval: function( moduleId, sourceCode ) {
 				return $.globalEval( sourceCode );
@@ -1099,6 +1106,7 @@ jQuery.Deferred && (function( $, undefined ) {
 			},
 			linkCss: linkCss
 		},
+
 		crossSiteLoad: {
 			//can not use $.getScript directly, as matrix.resolve
 			getScript: function( moduleId ) {
