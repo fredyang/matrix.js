@@ -82,6 +82,7 @@
 	}
 
 	$.extend( true, loadFilters, {
+
 		staticLoaded: {
 			returnFalse: function() {
 				return false;
@@ -102,11 +103,14 @@
 					} ).length);
 			}
 		},
+
 		getSource: {
+			//this is default getSource method
 			getTextByAjax: function( moduleId ) {
 				return $.get( matrix.url( moduleId ), null, null, "text" );
 			}
 		},
+
 		compile: {
 			globalEval: function( moduleId, sourceCode ) {
 				return $.globalEval( sourceCode );
@@ -116,6 +120,7 @@
 			},
 			linkCss: linkCss
 		},
+
 		crossSiteLoad: {
 			//can not use $.getScript directly, as matrix.resolve
 			getScript: function( moduleId ) {

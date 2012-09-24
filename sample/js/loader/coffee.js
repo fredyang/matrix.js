@@ -1,8 +1,10 @@
 /*
  <@depends>
- http://coffeescript.org/extras/coffee-script.js
+ref/coffee-script.js
  </@depends>
  * */
+
+// http://coffeescript.org/extras/coffee-script.js
 
 (function() {
 

@@ -1,7 +1,8 @@
 (function( $ ) {
 
-	matrix.loader.set( "linkerWithoutFilters", {
+	matrix.loader.set( "loaderWithLoadFunction", {
 		//mandatory
+		//load is function
 		load: function( moduleId ) {
 			//your can return a promise object
 			//but make sure to defer.resolve(moduleId, optionalResult)
@@ -41,18 +42,32 @@
 		}
 	} );
 
-	matrix.loader.set( "linkerUsingFilters", {
+	matrix.loader.set( "loaderWithLoadPipeline", {
 		//mandatory
+		//load is pipeline object
 		load: {
+			//the other missing load task will be filled by default value in buildLoadFnWithFilters
+			/*
+			 var staticLoaded = filters.staticLoaded || loadFilters.staticLoaded.returnFalse,
+			 getSource = filters.getSource || loadFilters.getSource.getTextByAjax,
+			 compile = filters.compile,
+			 crossSiteLoad = filters.crossSiteLoad,
+			 buildDependencies = filters.buildDependencies,
+			 buildUnload = filters.buildUnload;
+			 */
 			//optional
 			staticLoaded: function( moduleId ) {
 				return true;
 			},
+
 			//optional if you have crossSiteLoad
+			//return the compile result or nothing
 			compile: function( moduleId, sourceCode ) {
 
 			},
+
 			//optional if all your resource is local
+			//return a promise
 			crossSiteLoad: function( moduleId ) {
 
 			},
@@ -65,12 +80,44 @@
 			},
 
 			//optional
-			//this
+			//return a function () {}
 			buildUnload: function( sourceCode, moduleId ) {
-				//return new Function (sourceCode);
+				//return a function () {}
 			}
+
+		},
+
+		////////////the following is same as loaderWithLoadFunction
+		//optional
+		unload: function( moduleId ) {
+
+		},
+
+		//optional
+		//return a url relative to matrix.baseUrl or an absolute url
+		url: function( moduleId ) {
+
+		},
+
+		//optional
+		depends: function( moduleId ) {
+			//return a resourceString or resourceArray
+			//return "a.html, b.js";
+		},
+
+		//optional
+		//the first handler that be execute
+		//when promise is done
+		done: function( moduleId ) {
+
+		},
+
+		//optional
+		//the first handler that be execute
+		//when promise is failed
+		fail: function( moduleId ) {
+
 		}
-		//the remaining is same as above linker
 
 	} );
 

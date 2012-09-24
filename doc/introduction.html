@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<title>Matrix.js</title>
+	<link href="../sample/css/oocss.css" rel='stylesheet'/>
+	<link rel="stylesheet" type="text/css" href="introduction.css" media="all">
+	<link href='../sample/SyntaxHighlighter/styles/shCore.css' rel='stylesheet'/>
+	<link href='../sample/SyntaxHighlighter/styles/shThemeDefault.css' rel='stylesheet'/>
+	<script src='../sample/SyntaxHighlighter/scripts/XRegExp.js'></script>
+	<script src='../sample/SyntaxHighlighter/scripts/shCore.js'></script>
+	<script src='../sample/SyntaxHighlighter/scripts/shBrushJScript.js'></script>
+	<script src='../sample/SyntaxHighlighter/scripts/shBrushXml.js'></script>
+	<script src='../sample/SyntaxHighlighter/scripts/shBrushCss.js'></script>
+	<script src='../sample/analytic.js'></script>
+	<script language="javascript" type="text/javascript">
+		SyntaxHighlighter.defaults.gutter = false;
+		SyntaxHighlighter.defaults.toolbar = false;
+		SyntaxHighlighter.config.bloggerMode = true;
+		SyntaxHighlighter.all();
+	</script>
+</head>
+<body>
+<div class="page oldSchool">
+	<h1>Introducing Matrix.js</h1>
+
+	<h2>What is Matrix.js</h2>
+
+	<p>Marix.js is an extensible JavaScript library that can load client side modules on demand from
+		server. It helps you to build Single Page Application with faster loading speed, less memory
+		consumption, and better module reusability. </p>
+
+	<h2>What is the dependency of Matrix.js</h2>
+
+	<p>jQuery 1.5+. It can dynamically load jQuery from CDN, if jQuery is not loaded.</p>
+
+	<h2>Background</h2>
+
+	<p>Today, we are trying to build large scale Single Page Application with experience of
+		native application. This kind of application usually depends lots of modules. These modules
+		can be are system modules like jQuery, or MV-ish library/Framework, or they can be
+		application modules such customs widget, template, css module, localization resource, lookup
+		data. As the application grows, the number of moduels increase. These becomes quite a
+		challenge us. Here is a couple of problems that I have want to solve.
+	</p>
+
+<ol class="simpleList">
+	<li>
+		Slow application start-up time.
+		<p>We tend to load all the modules that an application need in the entire life time of the application.</p>
+	</li>
+	<li>
+		Application can load module on demand it can not release module when it does not need it anymore.
+	</li>
+	<li>
+		Application can load JavaScript files on demand only.
+	</li>
+
+</ol>
+
+
+<!--There are some solutions like <a href="http://requirejs.org">requirejs</a>. I
+		really want to love it, but after struggling for some time, I conclude that it does not fit
+		into my projects. So I write this library for my personal use. If you are statisfied with
+		requirejs, you should stick with it. Otherwise reads on.-->
+	<h2>What is a module?</h2>
+
+	<p>In the sense of matrix.js, it is a software construct that can be deployed to the browser
+		such as a JavaScript file, CSS style sheet, image, localization resource, a coffee script
+		file, even a string, a function, JSON object, or a CSS rule. A module is not necessarily
+		mapped to downloadable unit such as a file, although in a lot of case it is.</p>
+
+	<h2>What is the problem that Matrix.js tries to solve</h2>
+
+	<p>Today we are</p>
+	<!--
+ 1.	Too many modules are loaded in to browser due to messy dependencies.
+ 2.	Application startup time is slow as all modules are loaded in during page load.
+ 3.	Application gets slower over time, because modules are not unloaded when they are not used and their runtime resource cannot be reclaimed.
+ 4.	Unconventional modules such as a template, a JavaScript object, loaded on demand.
+ -->
+
+
+</div>
+</body>
+</html>

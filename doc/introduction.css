@@ -1,0 +1,30 @@
+div.syntaxhighlighter {
+	/*margin: 20px !important;*/
+}
+
+div.syntaxhighlighter .line.alt1, div.syntaxhighlighter .line.alt2 {
+	background-color: #c7c7c7 !important;
+}
+
+div.syntaxhighlighter .line {
+	white-space: normal !important;
+}
+
+table div.syntaxhighlighter {
+	margin: 0px !important;
+}
+
+/*add some comment*/
+
+.commonFeature {
+	background-color: #e6ff93;
+}
+
+h1, h2, h3, h4, h5, h6, ul, ol, dl, p, blockquote, .media {
+	margin: 10px 0;
+}
+
+blockquote {
+	margin-left: 40px;
+	margin-right: 40px;
+}

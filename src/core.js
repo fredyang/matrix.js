@@ -136,7 +136,7 @@ jQuery.Deferred && (function( $, undefined ) {
 
 		} else if ($.isArray( moduleIds )) {
 
-			//if it is moduleIdArray, load one after previous is full loaded
+			//if it is moduleIdArray, load one after previous is fully loaded
 			return loadModuleInSerial( moduleIds );
 
 		}
@@ -334,7 +334,7 @@ jQuery.Deferred && (function( $, undefined ) {
 		return isCrossDomain( urlRelativeToBaseUrl ) ? dummyLink.href : addHash( dummyLink.href );
 	}
 
-	function buildLoadWithFilters ( filters ) {
+	function buildLoadFnWithFilters ( filters ) {
 
 		for (var key in filters) {
 			attachFilter( filters, key );
@@ -753,7 +753,7 @@ jQuery.Deferred && (function( $, undefined ) {
 				} );
 
 				if ($.isPlainObject( loader.load )) {
-					loader.load = buildLoadWithFilters( loader.load );
+					loader.load = buildLoadFnWithFilters( loader.load );
 				}
 
 				if (!$.isFunction( loader.load )) {
@@ -859,6 +859,9 @@ jQuery.Deferred && (function( $, undefined ) {
 			return rFileName.exec( moduleId )[1];
 		},
 
+		//define a module
+		//dependencies is optional
+		//load is the code of the module
 		module: function( moduleId, dependencies, load, unload ) {
 
 			if ($.isFunction( dependencies )) {
