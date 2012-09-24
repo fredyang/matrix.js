@@ -41,38 +41,39 @@
 		can be are system modules like jQuery, or MV-ish library/Framework, or they can be
 		application modules such customs widget, template, css module, localization resource, lookup
 		data. As the application grows, the number of moduels increase. These becomes quite a
-		challenge us. Here is a couple of problems that I have want to solve.
+		challenge us. In the following, I try to use Problem/Solution style to explain how to use
+		matrix.js
 	</p>
+	<!--
+ <ol class="simpleList">
+	 <li>
+		 Slow application start-up time.
+		 <p>We tend to load all the modules that an application need in the entire life time of the application.</p>
+	 </li>
+	 <li>
+		 Application can load module on demand it can not release module when it does not need it anymore.
+	 </li>
+	 <li>
+		 Application can load JavaScript files on demand only.
+	 </li>
 
-<ol class="simpleList">
-	<li>
-		Slow application start-up time.
-		<p>We tend to load all the modules that an application need in the entire life time of the application.</p>
-	</li>
-	<li>
-		Application can load module on demand it can not release module when it does not need it anymore.
-	</li>
-	<li>
-		Application can load JavaScript files on demand only.
-	</li>
-
-</ol>
+ </ol>-->
 
 
-<!--There are some solutions like <a href="http://requirejs.org">requirejs</a>. I
-		really want to love it, but after struggling for some time, I conclude that it does not fit
-		into my projects. So I write this library for my personal use. If you are statisfied with
-		requirejs, you should stick with it. Otherwise reads on.-->
-	<h2>What is a module?</h2>
+	<!--There are some solutions like <a href="http://requirejs.org">requirejs</a>. I
+			really want to love it, but after struggling for some time, I conclude that it does not fit
+			into my projects. So I write this library for my personal use. If you are statisfied with
+			requirejs, you should stick with it. Otherwise reads on.-->
+	<!--	<h2>What is a module?</h2>
 
-	<p>In the sense of matrix.js, it is a software construct that can be deployed to the browser
-		such as a JavaScript file, CSS style sheet, image, localization resource, a coffee script
-		file, even a string, a function, JSON object, or a CSS rule. A module is not necessarily
-		mapped to downloadable unit such as a file, although in a lot of case it is.</p>
+		<p>In the sense of matrix.js, it is a software construct that can be deployed to the browser
+			such as a JavaScript file, CSS style sheet, image, localization resource, a coffee script
+			file, even a string, a function, JSON object, or a CSS rule. A module is not necessarily
+			mapped to downloadable unit such as a file, although in a lot of case it is.</p>
 
-	<h2>What is the problem that Matrix.js tries to solve</h2>
+		<h2>What is the problem that Matrix.js tries to solve</h2>
 
-	<p>Today we are</p>
+		<p>Today we are</p>-->
 	<!--
  1.	Too many modules are loaded in to browser due to messy dependencies.
  2.	Application startup time is slow as all modules are loaded in during page load.
@@ -80,6 +81,53 @@
  4.	Unconventional modules such as a template, a JavaScript object, loaded on demand.
  -->
 
+	<h3>Problem: Defer Loading</h3>
+
+	<p>I have a traditional web page, which consist of lots of widget and references lots JavaScript
+		library, I want to speed up the loading of first page.</p>
+
+	<h3>Solution:</h3>
+
+	<p>I can synchronously load the minimun set of modules to render the initial view that use can
+		see, and asynchronously load other modules in the background.
+	</p>
+
+	<pre class="brush:html">
+		&lt;!-- in the web page --&gt;
+		&lt;input type="button" id="btnOk" value="Ok" disabled /&gt;
+
+		&lt;script type="text/javascript"&gt;
+			matrix.baseUrl = "js/"
+			matrix( "defer-module.js" );
+		&lt;/script&gt;
+	</pre>
+
+	<pre class="brush:javascript">
+		//in the defer-module.js
+		$("#btnOk").attr("disabled", false).click(function () {
+				alert("hi");
+		});
+	</pre>
+
+	<h3>Problem: Loading dependencies</h3>
+
+	<p>My module dependes on other modules, such as localization string, css. I want to load them
+		together.
+	</p>
+
+	<h3>Solution 1: Specify depenencies using annotations</h3>
+
+	<h3></h3>
+
+	<p>
+
+	</p>
+
+	<h3>Problem: I have lots of modules, each modules is in its own file, this create lots of HTTP
+		calls.
+	</h3>
+
+	<h3>Solution 1: use </h3>
 
 </div>
 </body>

@@ -388,9 +388,9 @@ asyncTest( "serialize resolving test", function() {
 	} );
 } );
 
-module( "matrix.module" );
+module( "matrix.define" );
 
-asyncTest( "load js file defined with matrix.module using js loader", function() {
+asyncTest( "load js file defined with matrix.define using js loader", function() {
 	matrix( "order.js" ).done( function( moduleId, result ) {
 		ok( window.product, "can load js file's dependencies with matrix.provide" );
 		ok( window.order, "can load js files with matrix.provide" );

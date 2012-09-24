@@ -12,7 +12,7 @@
 	matrix.baseUrl = "js/";
 	//the dependencies of message.js is defined in the file
 	//Existing code need to modified to be consumable by matrix.js
-	// Existing code need to wrap in the matrix.module()
+	// Existing code need to wrap in the matrix.define()
 	//Although the change is minimum, it does depend on matrix.js
 	matrix( "message.js" ).done( function() {
 		$( "body" ).append( "<h1>" + message + "</h1>" );

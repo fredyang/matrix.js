@@ -1,3 +1,3 @@
-matrix.module( "greeting.js", function() {
+matrix.define( "greeting.js", function() {
 	window.greeting = "hello";
 } );

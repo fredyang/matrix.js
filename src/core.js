@@ -862,7 +862,7 @@ jQuery.Deferred && (function( $, undefined ) {
 		//define a module
 		//dependencies is optional
 		//load is the code of the module
-		module: function( moduleId, dependencies, load, unload ) {
+		define: function( moduleId, dependencies, load, unload ) {
 
 			if ($.isFunction( dependencies )) {
 				unload = load;
