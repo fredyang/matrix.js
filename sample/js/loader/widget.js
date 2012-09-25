@@ -7,14 +7,14 @@
 		rWidgetFileName = /jquery\.ui\.(\w+?)\.js/gi;
 
 	matrix.loader.set( "widget", "pack", {
-		// widgetName.widget always depends on the following
+		// widgetName.widget always require on the following
 		//
 		// widgetName.widget_js,
 		// core.widget_css,
 		// ui_theme.pack
 		//
 		// for example
-		// dialog.widget depends on
+		// dialog.widget require on
 		//
 		// dialog.widget_js
 		// core.widget_css
@@ -22,7 +22,7 @@
 		//
 		//ui_theme.pack is container for actaul theme
 		//an actual theme is like redmond.ui_theme
-		depends: function( moduleId ) {
+		require: function( moduleId ) {
 			var widgetName = matrix.fileName( moduleId );
 			return widgetName + ".widget_js, core.widget_css, ui_theme.pack";
 		}
@@ -59,7 +59,7 @@
 			return  matrix.baseUrl + "jquery.ui/jquery.ui." + matrix.fileName( moduleId ) + ".min.js";
 		},
 
-		depends: function( moduleId ) {
+		require: function( moduleId ) {
 			var widgetName = matrix.fileName( moduleId );
 			//draggable,droppable,mouse,position,sortable,widget does not have a css
 			if ("draggable,droppable,mouse,position,sortable,widget".indexOf( widgetName ) == -1) {
@@ -86,6 +86,6 @@
 	} );
 
 	//no_theme is the default theme
-	matrix.depends( "ui_theme.pack", "smoothness.ui_theme" );
+	matrix.require( "ui_theme.pack", "smoothness.ui_theme" );
 
 })( jQuery, matrix );

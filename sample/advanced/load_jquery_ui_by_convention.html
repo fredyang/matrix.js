@@ -33,7 +33,7 @@
 
 			$( "#ddlTheme" ).change( function( e ) {
 				var newDepencendy = this.value + ".ui_theme";
-				matrix.depends( "ui_theme.pack", newDepencendy );
+				matrix.require( "ui_theme.pack", newDepencendy );
 			} );
 
 		} );

@@ -16,7 +16,7 @@ jQuery.Deferred && (function( $, undefined ) {
 		fileName,
 		loaderCommands,
 		loadFilters,
-		depends,
+		require,
 		//match "http://domain.com" , "/jkj"
 		rAbsoluteUrl = /^http[s]?:\/\/|^\//,
 		rUrl = /^([\w\+\.\-]+:)(?:\/\/([^\/?#:]*)(?::(\d+))?)?/,
@@ -126,7 +126,7 @@ jQuery.Deferred && (function( $, undefined ) {
 
 				//create dependency in order
 				while (i < keys.length) {
-					depends( keys[i], keys[i - 1] );
+					require( keys[i], keys[i - 1] );
 					i++;
 				}
 				moduleIds = keys[keys.length - 1];
@@ -424,7 +424,7 @@ jQuery.Deferred && (function( $, undefined ) {
 									//#debug
 									matrix.debug.log( "          dependencies found for " + moduleId + ":" + embeddedDependencies );
 									//#end_debug
-									depends( moduleId, embeddedDependencies );
+									require( moduleId, embeddedDependencies );
 								}
 							}
 
@@ -445,7 +445,7 @@ jQuery.Deferred && (function( $, undefined ) {
 								}, 5 );
 							};
 
-							var dependencies = depends( moduleId );
+							var dependencies = require( moduleId );
 
 							//load dependencies because it combines static dependentModuleString
 							//and dynamic dependentModuleString
@@ -547,7 +547,7 @@ jQuery.Deferred && (function( $, undefined ) {
 
 							//delete the promises associated with the module
 							accessPromise( moduleId, undefined );
-							dependencies = depends( moduleId );
+							dependencies = require( moduleId );
 							if (dependencies) {
 								matrix.unload( dependencies, remove );
 							}
@@ -628,12 +628,12 @@ jQuery.Deferred && (function( $, undefined ) {
 		// or can use loader.depend method to return dependentResourceString which is called
 		//dynamic dependentResourceString,
 		//or we can combind them together
-		depends: depends = function( moduleId, dependencies ) {
+		require: require = function( moduleId, dependencies ) {
 
 			if (typeof moduleId === "object") {
 				for (var key in moduleId) {
 					if (moduleId.hasOwnProperty( key )) {
-						depends( key, moduleId[key] );
+						require( key, moduleId[key] );
 					}
 				}
 				return;
@@ -645,8 +645,8 @@ jQuery.Deferred && (function( $, undefined ) {
 					var staticDepencencies = dependencyStore[moduleId];
 					var loader = findLoader( moduleId );
 
-					if (loader && loader.depends) {
-						var dynamicDependencies = loader.depends( moduleId );
+					if (loader && loader.require) {
+						var dynamicDependencies = loader.require( moduleId );
 						if (dynamicDependencies && staticDepencencies) {
 							return dynamicDependencies + "," + staticDepencencies;
 						} else if (dynamicDependencies) {
@@ -665,7 +665,7 @@ jQuery.Deferred && (function( $, undefined ) {
 
 			} else if (dependencies === true) {
 				//for debugging purpuse matrix.depend(moduleId, true)
-				var moduleIds = depends( moduleId );
+				var moduleIds = require( moduleId );
 				moduleIds = moduleIds && splitByComma( moduleIds );
 				if (moduleIds) {
 					var rtn = [];
@@ -673,7 +673,7 @@ jQuery.Deferred && (function( $, undefined ) {
 						if (matrix.fileExt( moduleIds[i] ) !== "module") {
 							rtn.pushUnique( matrix.url( moduleIds[i] ) );
 						}
-						rtn.merge( depends( moduleIds[i], true ) );
+						rtn.merge( require( moduleIds[i], true ) );
 					}
 					return rtn;
 				}
@@ -719,7 +719,7 @@ jQuery.Deferred && (function( $, undefined ) {
 			resolveDependencies: function( actionAfterDependenciesResolved ) {
 				return function( moduleId ) {
 					var defer = $.Deferred(),
-						dependentResourceString = matrix.depends( moduleId );
+						dependentResourceString = matrix.require( moduleId );
 
 					if (dependentResourceString) {
 						matrix( dependentResourceString ).done( function() {
@@ -748,7 +748,7 @@ jQuery.Deferred && (function( $, undefined ) {
 
 				var loader = $.extend( true, {}, loaderDefinition );
 
-				$.each( "load,unload,url,depends".split( "," ), function() {
+				$.each( "load,unload,url,require".split( "," ), function() {
 					attachCommand( loader, this );
 				} );
 
@@ -784,7 +784,7 @@ jQuery.Deferred && (function( $, undefined ) {
 					//  return a url
 					// }
 				},
-				depends: {
+				require: {
 					//name: function (moduleId) {
 					// return a moduleIdString or moduleIdArray
 					// return "a.html, b.js"
@@ -884,7 +884,7 @@ jQuery.Deferred && (function( $, undefined ) {
 			promise.defer.dontResolve = true;
 
 			if (dependencies) {
-				depends( moduleId, dependencies );
+				require( moduleId, dependencies );
 				return matrix( dependencies ).done(
 					function() {
 						defineModule( moduleId, load, unload );
@@ -933,7 +933,7 @@ jQuery.Deferred && (function( $, undefined ) {
 	function getNewStaticDependencies ( moduleId, dependencieToSet ) {
 		var rtn,
 			loader = findLoader( moduleId ),
-			dynamicDependencies = loader && loader.depends && loader.depends( moduleId );
+			dynamicDependencies = loader && loader.require && loader.require( moduleId );
 
 		if (dynamicDependencies) {
 			rtn = [];

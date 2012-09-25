@@ -1,8 +1,8 @@
 /*
- <@depends>
+ <@require>
  orders.tmpl,
  dialog.widget
- </@depends>
+ </@require>
  * */
 (function( $ ) {
 	var $dialog = $( "<p>You are using orders module</p>" );

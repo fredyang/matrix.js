@@ -1,7 +1,7 @@
 /*
- <@depends>
+ <@require>
  dashboard.tmpl,	tabs.widget
- </@depends>
+ </@require>
  */
 $( function() {
 

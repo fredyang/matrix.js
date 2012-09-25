@@ -23,11 +23,11 @@
 		runloadStatement = /<@unload>([\w\W]+?)<\/@unload>/i,
 
 		//match string "ref2, ref1" in
-		/* <@depends>
+		/* <@require>
 		 ref2, ref1
-		 <@depends>
+		 <@require>
 		 */
-		rDependHeader = /<@depends>([\w\W]+?)<\/@depends>/i;
+		rDependHeader = /<@require>([\w\W]+?)<\/@require>/i;
 
 	$.extend( true, loaderCommands, {
 		load: {
@@ -157,9 +157,9 @@
 			}
 		},
 		buildDependencies: {
-			parseDependsTag: function( moduleId, sourceCode ) {
-				var depends = rDependHeader.exec( sourceCode );
-				return (depends && depends[1] ) || null;
+			parseRequireTag: function( moduleId, sourceCode ) {
+				var require = rDependHeader.exec( sourceCode );
+				return (require && require[1] ) || null;
 			}
 		}
 	} );
@@ -177,7 +177,7 @@
 			crossSiteLoad: "getScript",
 			//getSource: "getTextByAjax",
 			compile: "globalEval",
-			buildDependencies: "parseDependsTag",
+			buildDependencies: "parseRequireTag",
 			buildUnload: "parseUnloadTag"
 		},
 		//this is necessary because if you have a sub loader inherite from
@@ -195,7 +195,7 @@
 			staticLoaded: "hasCssLinkTag",
 			crossSiteLoad: "linkCss",
 			compile: "linkCss",
-			buildDependencies: "parseDependsTag"
+			buildDependencies: "parseRequireTag"
 		},
 		unload: "removeCssLinkTag",
 		fileExt: "css"

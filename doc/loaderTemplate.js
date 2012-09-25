@@ -22,7 +22,7 @@
 		},
 
 		//optional
-		depends: function( moduleId ) {
+		require: function( moduleId ) {
 			//return a resourceString or resourceArray
 			//return "a.html, b.js";
 		},
@@ -100,7 +100,7 @@
 		},
 
 		//optional
-		depends: function( moduleId ) {
+		require: function( moduleId ) {
 			//return a resourceString or resourceArray
 			//return "a.html, b.js";
 		},

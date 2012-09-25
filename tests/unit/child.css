@@ -1,4 +1,4 @@
-/* <@Depends>base.css</@depends> */
+/* <@require>base.css</@require> */
 .myclass {
 	font-size: 30px;
 }

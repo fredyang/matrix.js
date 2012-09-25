@@ -1,7 +1,7 @@
 /*
- <@depends>
+ <@require>
  debugInfo.tmpl
- </@depends>
+ </@require>
  */
 (function() {
 	var $content;

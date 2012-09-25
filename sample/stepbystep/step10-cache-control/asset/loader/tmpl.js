@@ -1,7 +1,7 @@
 /*
- <@depends>
+ <@require>
  http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.js
- </@depends>
+ </@require>
  */
 (function( $, matrix ) {
 
@@ -12,7 +12,7 @@
 					$.template( this.id, $( this ).html() );
 				} );
 			},
-			buildDependencies: "parseDependsTag"
+			buildDependencies: "parseRequireTag"
 		},
 
 		url: "folder",

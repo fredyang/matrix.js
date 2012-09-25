@@ -1,6 +1,6 @@
 /*
- <@depends>
+ <@require>
  css.pack, greeting.js , name.js
- </@depends>
+ </@require>
  */
 var message = greeting + "," + name;

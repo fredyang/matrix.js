@@ -126,10 +126,9 @@
 
 	<pre class="brush:javascript">
 /*
-	<@depends>
+	<@require>
 	localization.js, module1.css
-	</
-@depends>
+	</@require>
 */
 $( "#btnOk" ).attr( "disabled", false ).click( function() {
 $( "&lt;h1 class='mymodule'&gt;" + message + "&lt;/h1&gt;" ).appendTo( "body" );
@@ -157,7 +156,7 @@ $( "&lt;h1 class='mymodule'&gt;" + message + "&lt;/h1&gt;" ).appendTo( "body" );
 		} );
 	</pre>
 
-<h4>Solution 3: Specify dependencies in profile.js using matrix.depends</h4>
+<h4>Solution 3: Specify dependencies in profile.js using matrix.require</h4>
 
 <p>You don't want modify the original module source file. You can specify it in a profile.js for
 matrix.js

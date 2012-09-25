@@ -1,7 +1,7 @@
 /*
- <@depends>
+ <@require>
  ../css/demos.css, demo.tmpl, dashboard.view,	debugInfo.view
- </@depends>
+ </@require>
  */
 $( function() {
 	var $content = $.tmpl( "demo", null ).appendTo( "body" );

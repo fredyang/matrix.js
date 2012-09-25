@@ -1,6 +1,6 @@
 /*
-<@depends>
+<@require>
 step7Css.css, others/greeting.js , others/myname.js
-</@depends>
+</@require>
 */
 var message4 = greeting + "," + myname;

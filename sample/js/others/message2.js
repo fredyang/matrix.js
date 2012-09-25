@@ -1,6 +1,6 @@
 /*
-<@depends>
+<@require>
 others/greeting.js , others/myname.js
-</@depends>
+</@require>
 */
 var message2 = greeting + "," + myname;

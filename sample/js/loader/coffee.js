@@ -1,7 +1,7 @@
 /*
- <@depends>
+ <@require>
 ref/coffee-script.js
- </@depends>
+ </@require>
  * */
 
 // http://coffeescript.org/extras/coffee-script.js

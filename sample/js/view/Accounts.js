@@ -1,8 +1,8 @@
 /*
- <@depends>
+ <@require>
  accounts.tmpl,
  dialog.widget
- </@depends>
+ </@require>
  * */
 (function( $ ) {
 

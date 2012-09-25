@@ -148,16 +148,16 @@ asyncTest( "module parallel failed", function() {
 asyncTest( "load by order test", function() {
 	var loadByOrder = true;
 
-	ok( matrix.depends( "d1.dummy" ) === undefined &&
-	    matrix.depends( "d2.dummy" ) == undefined &&
-	    matrix.depends( "d3.dummy" ) == undefined,
+	ok( matrix.require( "d1.dummy" ) === undefined &&
+	    matrix.require( "d2.dummy" ) == undefined &&
+	    matrix.require( "d3.dummy" ) == undefined,
 		"by default module's dependency is undefined" );
 
 	matrix( "d1.dummy, d2.dummy, d3.dummy", loadByOrder ).done( function() {
 
-		ok( matrix.depends( "d1.dummy" ) === undefined &&
-		    matrix.depends( "d2.dummy" ) == "d1.dummy" &&
-		    matrix.depends( "d3.dummy" ) == "d2.dummy",
+		ok( matrix.require( "d1.dummy" ) === undefined &&
+		    matrix.require( "d2.dummy" ) == "d1.dummy" &&
+		    matrix.require( "d3.dummy" ) == "d2.dummy",
 			"if resoruce is loadByOrder, then the module dependencies is generate first" );
 
 		ok( dummyKeys.join() == "d1,d2,d3", "can load in parallel" );
@@ -166,9 +166,9 @@ asyncTest( "load by order test", function() {
 
 		ok( dummyKeys.length == 0, "when d3 unload, d1, d2 will unload automatic" );
 
-		matrix.depends( "d1.dummy", undefined );
-		matrix.depends( "d2.dummy", undefined );
-		matrix.depends( "d3.dummy", undefined );
+		matrix.require( "d1.dummy", undefined );
+		matrix.require( "d2.dummy", undefined );
+		matrix.require( "d3.dummy", undefined );
 
 		start();
 	} );
@@ -192,11 +192,11 @@ asyncTest( "module serial load test", function() {
 asyncTest( "module serial failed to load", function() {
 	matrix( ["d1.dummy", "d2.dummy", "d5.abc", "d3.dummy", "d4.dummy"] ).fail( function() {
 		ok( dummyKeys.length == 0, "when serial module failed, all module is unloaded" );
-		matrix.depends( "d1.dummy", undefined );
-		matrix.depends( "d2.dummy", undefined );
-		matrix.depends( "d3.dummy", undefined );
-		matrix.depends( "d4.dummy", undefined );
-		matrix.depends( "d5.abc", undefined );
+		matrix.require( "d1.dummy", undefined );
+		matrix.require( "d2.dummy", undefined );
+		matrix.require( "d3.dummy", undefined );
+		matrix.require( "d4.dummy", undefined );
+		matrix.require( "d5.abc", undefined );
 		assertEmpty();
 		start();
 	} );
@@ -205,21 +205,21 @@ asyncTest( "module serial failed to load", function() {
 
 asyncTest( "parallel module registration/load test", function() {
 	assertEmpty();
-	matrix.depends( "d1.dummy", "d2.dummy, d3.dummy" );
-	equal( matrix.depends( "d1.dummy" ), "d2.dummy, d3.dummy", "dependencies register successfully" )
+	matrix.require( "d1.dummy", "d2.dummy, d3.dummy" );
+	equal( matrix.require( "d1.dummy" ), "d2.dummy, d3.dummy", "dependencies register successfully" )
 	matrix( "d1.dummy" ).done( function() {
 		ok( dummyKeys.join() == "d2,d3,d1", "parallel dependencies is resolved according to registration" );
 		matrix.unload( "d1.dummy" );
-		matrix.depends( "d1.dummy", undefined );
+		matrix.require( "d1.dummy", undefined );
 		assertEmpty();
 		start();
 	} );
 } );
 
 asyncTest( "serial module dependency test", function() {
-	matrix.depends( "d3.dummy", ["d1.dummy", "d2.dummy"] );
+	matrix.require( "d3.dummy", ["d1.dummy", "d2.dummy"] );
 
-	deepEqual( matrix.depends( "d3.dummy" ), ["d1.dummy", "d2.dummy"], "dependencies register successfully" )
+	deepEqual( matrix.require( "d3.dummy" ), ["d1.dummy", "d2.dummy"], "dependencies register successfully" )
 
 	matrix( "d3.dummy" ).done( function() {
 		equal( dummyKeys.join(), "d1,d2,d3", "can load in series" );
@@ -234,8 +234,8 @@ test( "reference count test", function() {
 	matrix.unload( "a.pack" );
 	ok( !matrix.debug.moduleCounters( "a.pack" ), "after unloaded,  a promise is removed" );
 
-	matrix.depends( "a.pack", "b.pack, c.pack" );
-	matrix.depends( "d.pack", "b.pack, c.pack" );
+	matrix.require( "a.pack", "b.pack, c.pack" );
+	matrix.require( "d.pack", "b.pack, c.pack" );
 	matrix( "a.pack" );
 	equal( matrix.debug.moduleCounters( "a.pack" ).refCount, 1, "a.pack.refCount === 1" );
 	equal( matrix.debug.moduleCounters( "b.pack" ).refCount, 1, "b.pack.refCount === 1" );
@@ -286,15 +286,15 @@ asyncTest( "can resolve/unload multiple independent reference", function() {
 
 asyncTest( "test programmatic dependency registration", function() {
 
-	matrix.depends( "depend1.js", "depend2.js" );
+	matrix.require( "depend1.js", "depend2.js" );
 
 	matrix( "depend1.js" ).done( function( data ) {
 		start();
 		ok( window.depend1 && window.depend2, "depend1 and depend2 are both resolved" );
 		matrix.unload( "depend1.js, depend2.js" );
 		ok( !window.depend1 && !window.depend2, "depend1 and depend2 are both unloaded" );
-		matrix.depends( "depend1.js", null );
-		var dependencies = matrix.depends( "depend1.js" );
+		matrix.require( "depend1.js", null );
+		var dependencies = matrix.require( "depend1.js" );
 		ok( !dependencies, "sub reference has been destroyed" );
 	} );
 } );
@@ -335,7 +335,7 @@ asyncTest( "javascript unload test", function() {
 	ok( !window.depend2, "depend2 initially is undefined" );
 	ok( !window.depend3, "depend3 initially is undefined" );
 
-	matrix.depends( {
+	matrix.require( {
 		"depend2.js": "depend1.js",
 		"depend3.js": "depend2.js, depend1.js"
 	} );
@@ -348,7 +348,7 @@ asyncTest( "javascript unload test", function() {
 		ok( !window.depend2, "depend2 has been deleted" );
 		ok( !window.depend3, "depend3 has been deleted" );
 
-		matrix.depends( {
+		matrix.require( {
 			"depend2.js": undefined,
 			"depend3.js": undefined
 		} );
@@ -357,17 +357,17 @@ asyncTest( "javascript unload test", function() {
 
 asyncTest( "javascript dependencies registration test (programmatic and manifest)", function() {
 
-	matrix.depends( {
+	matrix.require( {
 		"depend2.js": "depend1.js",
 		"depend3.js": "depend2.js, depend1.js"
 	} );
 
-	//depend4 depends on depend3.js using manifest
+	//depend4 require on depend3.js using manifest
 	matrix( "depend4.js" ).done( function() {
 		ok( depend1 && depend2 && depend3 && depend4, "depend1/2/3/4 are all resolved, because programmatic and manifest registration work together" );
 		matrix.unload( "depend4.js" );
 		ok( !window.depend1 && !window.depend2 && !window.depend3 && !window.depend4, "depend1/2/3/4 are all unloaded, because programmatic and manifest registration work together" );
-		matrix.depends( {
+		matrix.require( {
 			"depend2.js": undefined,
 			"depend3.js": undefined,
 			"depend4.js": undefined

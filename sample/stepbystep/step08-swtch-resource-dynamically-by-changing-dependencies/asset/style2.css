@@ -1,7 +1,7 @@
 /*
-<@depends>
+<@require>
 base2.css
-</@depends>
+</@require>
 */
 h1 {
 	background-color: #3756ff;

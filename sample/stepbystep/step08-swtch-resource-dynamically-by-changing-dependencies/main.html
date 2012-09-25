@@ -14,15 +14,15 @@
 <script src="../../../download/matrix.debug.js"></script>
 <script type="text/javascript">
 	matrix.baseUrl = "asset/";
-	matrix.depends( "css.pack", "style1.css" );
+	matrix.require( "css.pack", "style1.css" );
 	matrix( "message.js" ).done( function() {
 		$( "body" ).append( "<h1>" + message + "</h1>" );
 	} );
 
 	$( "#btnSwitchStyle" ).toggle( function() {
-		matrix.depends( "css.pack", "style2.css" );
+		matrix.require( "css.pack", "style2.css" );
 	}, function() {
-		matrix.depends( "css.pack", "style1.css" );
+		matrix.require( "css.pack", "style1.css" );
 	} );
 
 </script>
