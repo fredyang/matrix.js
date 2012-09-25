@@ -100,12 +100,12 @@
 
 		&lt;script type="text/javascript"&gt;
 			matrix.baseUrl = "js/"
-			matrix( "defer-module.js" );
+			matrix( "module1.js" );
 		&lt;/script&gt;
 	</pre>
 
 	<pre class="brush:javascript">
-		//in the defer-module.js
+		//in the module1.js
 		$("#btnOk").attr("disabled", false).click(function () {
 				alert("hi");
 		});
@@ -126,10 +126,9 @@
 
 	<pre class="brush:javascript">
 /*
-	<@require>
+	&lt;@require&gt;
 	localization.js, module1.css
-	</
-@require>
+	&lt;/@require&gt;
 */
 $( "#btnOk" ).attr( "disabled", false ).click( function() {
 $( "&lt;h1 class='mymodule'&gt;" + message + "&lt;/h1&gt;" ).appendTo( "body" );
@@ -338,7 +337,7 @@ matrix.define( "localization.js", function() {
 </pre>
 
 <p>If your module id is just is in the format of "fileName.ext", its url is by default
-matrix.baseUrl + moduleId.
+	matrix.baseUrl + moduleId.
 </p>
 
 <pre class="brush:javascript">
@@ -360,7 +359,7 @@ matrix.baseUrl + moduleId.
 <h3>Problem: Switch module</h3>
 
 <p>I have a module, such as a css file. The page initially use these module, however, we want
-to allow user swap the old module with a new module.</p>
+	to allow user swap the old module with a new module.</p>
 
 <h4>Solution 1: change the url of module dynamically</h4>
 
