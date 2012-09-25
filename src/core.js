@@ -793,6 +793,9 @@ jQuery.Deferred && (function( $, undefined ) {
 				}
 			},
 
+			//strategies to find the name of the loader based on moduleId
+			//the basic strategy is use the extension as the loader name
+			//however you can add your own strategis
 			finders: loaderFinders = [
 				//find loader by by file extensions directly
 				function( moduleId ) {
