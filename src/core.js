@@ -334,18 +334,18 @@ jQuery.Deferred && (function( $, undefined ) {
 		return isCrossDomain( urlRelativeToBaseUrl ) ? dummyLink.href : addHash( dummyLink.href );
 	}
 
-	function buildLoadFnWithFilters ( filters ) {
+	function convertPiplelineToLoadFunction ( pipeline ) {
 
-		for (var key in filters) {
-			attachFilter( filters, key );
+		for (var key in pipeline) {
+			attachFilter( pipeline, key );
 		}
 
-		var staticLoaded = filters.staticLoaded || loadFilters.staticLoaded.returnFalse,
-			getSource = filters.getSource || loadFilters.getSource.getTextByAjax,
-			compile = filters.compile,
-			crossSiteLoad = filters.crossSiteLoad,
-			buildDependencies = filters.buildDependencies,
-			buildUnload = filters.buildUnload;
+		var staticLoaded = pipeline.staticLoaded || loadFilters.staticLoaded.returnFalse,
+			getSource = pipeline.getSource || loadFilters.getSource.getTextByAjax,
+			compile = pipeline.compile || loadFilters.compile.globalEval,
+			crossSiteLoad = pipeline.crossSiteLoad || loadFilters.crossSiteLoad.getScript,
+			buildDependencies = pipeline.buildDependencies || loadFilters.buildDependencies.parseRequireTag,
+			buildUnload = pipeline.buildUnload || loadFilters.buildUnload.parseUnloadTag;
 
 		if (!compile && !crossSiteLoad) {
 			throw "module loader must implement at least one of compile, crossSiteLoad";
@@ -754,7 +754,8 @@ jQuery.Deferred && (function( $, undefined ) {
 				} );
 
 				if ($.isPlainObject( loader.load )) {
-					loader.load = buildLoadFnWithFilters( loader.load );
+					//it is a pipeline, but not a function
+					loader.load = convertPiplelineToLoadFunction( loader.load );
 				}
 
 				if (!$.isFunction( loader.load )) {
