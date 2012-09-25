@@ -173,12 +173,13 @@
 	//js adapter try to parse the content of js file
 	addLoader( "js", {
 		load: {
-			staticLoaded: "hasScriptTag",
-			crossSiteLoad: "getScript",
+			//the following are by default
+			//staticLoaded: "hasScriptTag",
+			//crossSiteLoad: "getScript",
 			//getSource: "getTextByAjax",
-			compile: "globalEval",
-			buildDependencies: "parseRequireTag",
-			buildUnload: "parseUnloadTag"
+			//compile: "globalEval",
+			//buildDependencies: "parseRequireTag",
+			//buildUnload: "parseUnloadTag"
 		},
 		//this is necessary because if you have a sub loader inherite from
 		//from this, and you don't want to inherited sub loader to specify this again

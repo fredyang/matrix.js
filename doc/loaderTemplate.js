@@ -60,12 +60,14 @@
 
 			//optional
 			//determine whether moduleId is staticalLoaded
+			//by default it is hasScriptTag
 			staticLoaded: function( moduleId ) {
 				return true;
 			},
 
 			//optional if you have crossSiteLoad
 			//return the compile result or nothing
+			//by default is globalEval
 			compile: function( moduleId, sourceCode ) {
 
 			},
@@ -73,6 +75,7 @@
 			//optional if all your resource is local
 			//if your resource can be cross site you need to implement this
 			//return a promise
+			//by efault is getScript
 			crossSiteLoad: function( moduleId ) {
 				//return promise
 			},
@@ -80,56 +83,19 @@
 			//optional
 			//this provide some static dependencies by
 			//parsing the source code
+			//by default it is parseRequireTag
 			buildDependencies: function( moduleId, sourceCode ) {
 				//return "x.js, b.html, c.css";
 			},
 
 			//optional
 			//return a function () {}
+			//by default it is parseUnloadTag
 			buildUnload: function( sourceCode, moduleId ) {
 				//return a function () {}
 			}
 
-		},
-
-		////////////the following is same as loaderWithLoadFunction
-		//optional
-		unload: function( moduleId ) {
-
-		},
-
-		//optional
-		//return a url relative to matrix.baseUrl or an absolute url
-		url: function( moduleId ) {
-
-		},
-
-		//optional
-		require: function( moduleId ) {
-			//return a resourceString or resourceArray
-			//return "a.html, b.js";
-		},
-
-		//optional
-		//the first handler that be execute
-		//when promise is done
-		done: function( moduleId ) {
-
-		},
-
-		//optional
-		//the first handler that be execute
-		//when promise is failed
-		fail: function( moduleId ) {
-
-		},
-
-		//this is optional
-		//it is necessary when we use file name to calcualate url,
-		// and the loader name is different from extension of
-		//of physical file name
-		fileExt: "file extension"
-
+		}
 	} );
 
 })( jQuery );

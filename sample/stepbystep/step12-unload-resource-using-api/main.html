@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<title></title>
+	<script src="../../analytic.js" type="text/javascript"></script>
+</head>
+<body>
+<p>
+	click link button, observe the memory surge, and click unload, observe the memory will
+	drop. How fast the memory drop is depedent on your browser and client machine. But it
+	will drop within a minute.
+</p>
+<input type="button" id="link" value="link resource"/>
+<input type="button" disabled id="unload" value="unload resource"/>
+<script src="http://code.jquery.com/jquery-1.7.2.js"></script>
+<script src="../../../download/matrix.debug.js"></script>
+<script type="text/javascript">
+	matrix.baseUrl = "asset/";
+	//main.js use comment annotation define the logic to unload itself
+	//if you can matrix.unload("main.js") will run the logic.
+	$( "#link" ).click( function() {
+		$( this ).attr( "disabled", true );
+		matrix( "main.js" );
+		$( "#unload" ).attr( "disabled", false );
+	} );
+
+	$( "#unload" ).click( function() {
+		$( this ).attr( "disabled", true );
+		matrix.unload( "main.js" );
+		$( "#link" ).attr( "disabled", false );
+	} );
+</script>
+</body>
+</html>

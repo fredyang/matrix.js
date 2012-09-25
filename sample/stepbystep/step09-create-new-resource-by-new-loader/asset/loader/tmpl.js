@@ -14,8 +14,7 @@
 				$( sourceCode ).filter( "script" ).each( function() {
 					$.template( this.id, $( this ).html() );
 				} );
-			},
-			buildDependencies: "parseRequireTag"
+			}
 		},
 
 		url: "folder",

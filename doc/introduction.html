@@ -185,7 +185,7 @@ $( "&lt;h1 class='mymodule'&gt;" + message + "&lt;/h1&gt;" ).appendTo( "body" );
 <p>I have lots of modules, each modules is in its own file, this create lots of HTTP
 	calls.</p>
 
-<h4>Solution 1: build tools combine files</h4>
+<h4>Solution 1: use build tools to combine module files</h4>
 
 <p>We can use build tools to combine and js files, however, the original source code
 	need to be defined using matrix.define method. Here is the <a
@@ -230,9 +230,9 @@ matrix.define( "localization.js", function() {
 
 <h3>Problem: I want to client discard the cached copy of module files.</h3>
 
-<p>In the previous solution, we set the cache-control header to a crazy large value, so that
-	it will never expired, but what if we update our module files andn now the client will not
-	be able to pick it up?
+<p>In the previous solution, we set the cache-control header to a crazily large value, so that
+	it will never expired, but what if we have updated our module files and we want the client
+	to be able to pick it up immediately?
 </p>
 
 <h4>Solution</h4>
@@ -244,7 +244,8 @@ matrix.define( "localization.js", function() {
 		//modules/module1.css?v=2
 		matrix.hash("2");
 		//
-		//this will generate new hash, and basically disable cache,
+		//this will always generate new hash each time
+		//the page is load, and basically disable cache,
 		//it is good for development.
 		//module1.css?v=1348516706585
 		matrix.hash(true);
@@ -333,7 +334,7 @@ matrix.define( "localization.js", function() {
 <p>If the module id is absolute url like the following. The id is will be used as the url</p>
 
 <pre class="brush:javascript">
-	matrix.load("http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js");
+	matrix("http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js");
 </pre>
 
 <p>If your module id is just is in the format of "fileName.ext", its url is by default
@@ -356,14 +357,350 @@ matrix.define( "localization.js", function() {
 	matrix("jqueryui.js");
 </pre>
 
+<h3>Problem: I have non-javascript modules such as css, template, image, can I dynamically load
+	them.</h3>
+
+<h4>Solution: create a new loader with load function</h4>
+
+<p>matrix.js is a general purpose module loading system, it can be extended to load new modules
+	as long as the modules can be consumed by browser. The following is the template code
+	to create a new module, these is a bit overwhelming, but most of them are optional, and
+	you can inherite the missing member from base loader.
+</p>
+
+<pre class="brush:javascript">
+	matrix.loader.set( "loaderName", ["baseLoaderName",] {
+
+			//mandatory
+			//load is function
+			load: function( moduleId ) {
+				//if you can return the module immediately
+				//return it now , return module
+				//
+				//if not, your can return a promise object
+				//
+				//in your processing code make sure
+				// to defer.resolve(moduleId, module) later
+			},
+
+			//optional
+			unload: function( moduleId ) {
+
+			},
+
+			//optional
+			//return a url relative to matrix.baseUrl or an absolute url
+			url: function( moduleId ) {
+
+			},
+
+			//optional
+			//get the depedencies of a moduleId
+			require: function( moduleId ) {
+				//return a resourceString or resourceArray
+				//return "a.html, b.js";
+			},
+
+			//optional
+			//the first handler that be execute
+			//when promise is done
+			done: function( moduleId ) {
+
+			},
+
+			//optional
+			//the first handler that be execute
+			//when promise is failed
+			fail: function( moduleId ) {
+
+			},
+
+			//this is optional
+			//it is necessary when we use file name to calcualate url,
+			// and the loader name is different from extension of
+			//of physical file name
+			fileExt: "file extension"
+		} );
+</pre>
+
+
+<p>Now lets build a image loader. And there is the code. And we use the loader in this <a
+	href="../sample/advanced/load_images-album.html">photo album sample</a></p>
+
+<pre class="brush:javascript">
+	matrix.loader.set( "image", {
+		load: function( moduleId ) {
+			var defer = $.Deferred(),
+				promise = defer.promise(),
+				url = matrix.url( moduleId );
+
+			var img = new Image();
+			img = new Image();
+			img.onload = function() {
+				defer.resolve( moduleId, url );
+			};
+			img.onerror = function() {
+				defer.reject( moduleId, url );
+			};
+			img.src = url;
+			return promise;
+		}
+	} );
+
+	matrix.loader.mapFileExtsToLoader( "jpg,png,bmp,gif", "image" );
+</pre>
+
+<p>What should be noted is that the loader name is "image". Normally, matrix.js use extension of
+	your moduleId to locate the loader. If your resource id is "myfile.image", then the loader will
+	be picked. However, our image extension is usually "jpg", "gif" and so on. The
+	mapFileExtsToLoader method solve this problem.
+</p>
+
+<p>This loader has been included in the library. Here just shows we can take to create a load
+	function for a loader.
+</p>
+
+<h4>Solution 2: create a new loader with load pipeline</h4>
+
+<p>The "load" memeber of a loader can be also a pipeline object like the following. Basically,
+	via.js treat the load process as pipeline which combine serveral tasks. But only either
+	compile or crossSiteLoad is required.
+</p>
+
+<pre class="brush:javascript">
+	load: {
+
+			//optional
+			//determine whether moduleId is staticalLoaded
+			//by default it is hasScriptTag
+			staticLoaded: function( moduleId ) {
+				return true;
+			},
+
+			//optional if you have crossSiteLoad
+			//return the compile result or nothing
+			//by default is globalEval
+			compile: function( moduleId, sourceCode ) {
+
+			},
+
+			//optional if all your resource is local
+			//if your resource can be cross site you need to implement this
+			//return a promise
+			//by efault is getScript
+			crossSiteLoad: function( moduleId ) {
+				//return promise
+			},
+
+			//optional
+			//this provide some static dependencies by
+			//parsing the source code
+			//by default it is parseRequireTag
+			buildDependencies: function( moduleId, sourceCode ) {
+				//return "x.js, b.html, c.css";
+			},
+
+			//optional
+			//return a function () {}
+			//by default it is parseUnloadTag
+			buildUnload: function( sourceCode, moduleId ) {
+				//return a function () {}
+			}
+
+		}
+</pre>
+
+<p>In the following we will build template loader. First we create a file under
+	{matrix.baseUrl}/loader/tmpl.js, the file we have the following code.
+</p>
+
+<pre class="brush:javascript">
+	// in {matrix.baseUrl}/loader/tmpl.js
+	/*
+	 &lt;@require&gt;
+	 http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.js
+	 &lt;/@require&gt;
+	 */
+	(function( $, matrix ) {
+
+		matrix.loader.set( "tmpl", {
+			load: {
+				staticLoaded: function( moduleId ) {
+					return !!$.template[moduleId];
+				},
+				compile: function( moduleId, sourceCode ) {
+					$( sourceCode ).filter( "script" ).each( function() {
+						$.template( this.id, $( this ).html() );
+					} );
+				}
+			},
+
+			//we intend to put all the resource file under "{matrix.baseUrl}/tmpl" folder
+			url: "folder",
+
+			//the actual file extention is not "tmpl", but "html"
+			fileExt: "html"
+		} );
+
+	})( jQuery, matrix );
+</pre>
+
+<p>Here we use a pipeline object as loader, it implement the staticLoaded, compile.
+	Please note that this loader depends on jquery.tmpl.js. After this, we can use
+	template loader liekt the following.</p>
+
+<pre class="brush:javascript">
+	matrix( "main.tmpl" ).done( function() {
+			$.tmpl( "main", "hello,world" ).appendTo( "body" );
+	} );
+</pre>
+
+<p>The template file is organized like the following.</p>
+
+<img src="image/tmpl-loader.png" alt="">
+
+<p>The interesting thing is that not only we can use annotation in JavaScript file,
+	but we also use it in any text file such as template file</p>
+
+<pre class="brush:html">
+	&lt;!--
+	&lt;@require&gt;
+		common.tmpl,
+		contact.tmpl
+	&lt;/@require&gt;
+	--&gt;
+	&lt;script type="tmpl" id="main"&gt;
+		{{tmpl "header"}}
+		&lt;h2&gt;${$data} (render by hello.html template file)&lt;/h2&gt;
+		{{tmpl "contact"}}
+		{{tmpl "footer"}}
+	&lt;/script&gt;
+</pre>
+
+<h3>Problem: I have loaded a module, but can I unload it when it is no longer used.</h3>
+
+<p>This is very common problem. We load a widget and use it for a while and close it, but it
+	still stay in memory. If we continue like this, our Single Page Application will be using
+	more and more memory.</p>
+
+
+<h4>Solution 1: Define unload logic using annotation.</h4>
+
+<p>Matrix.js only only support loading module, it also support unloading module. In the
+	<a href="../sample/stepbystep/step11-unload-resource-using-annotations/main.html">following</a>
+	We will add the unloading logic as annotations. This is good existing code. And you don't want
+	to modify them. However, annotation does not work for cross-site resource.
+</p>
+
+<pre class="brush:javascript">
+	matrix( "main.js" );
+	//
+	matrix.unload( "main.js" );
+</pre>
+<pre class="brush:javascript">
+	//in main.js
+	/*
+	 &lt;@unload&gt;
+	 dummy = null;
+	 delete window.dummy;
+	 &lt;/@unload&gt;
+	 * */
+	(function( $ ) {
+
+		var dummy = [];
+		for (var i = 0; i < 999999; i++) {
+			dummy.push( (new Date).toString() );
+		}
+
+		for (var i = 0; i < 999999; i++) {
+			dummy.push( function() {
+				return new Date();
+			} );
+		}
+
+		window.dummy = dummy;
+	})( window );
+</pre>
+
+<p>matrix.js use annotation to build a function, which it will be called when the matrix.unload
+	method is called.</p>
+
+<h4>Solution 2: use matrix.define to define unload logic</h4>
+
+<p>We can use matrix.define explicitly define how the unloading logic works, like the <a
+	href="../sample/stepbystep/step12-unload-resource-using-api/main.html">following</a>.
+	This approach require you slighly modifined the code in the module. But it works even it is
+	cross-site resource.
+</p>
+
+
+<pre class="brush:javascript">
+	//in main.js
+	matrix.define( "main.js",
+		function() {
+			(function( $ ) {
+
+				var dummy = [];
+				for (var i = 0; i < 999999; i++) {
+					dummy.push( (new Date).toString() );
+				}
+
+				for (var i = 0; i < 999999; i++) {
+					dummy.push( function() {
+						return new Date();
+					} );
+				}
+
+				window.dummy = dummy;
+			})( window );
+
+		},
+		function() {
+			dummy = null;
+			delete window.dummy;
+		} );
+</pre>
+
 <h3>Problem: Switch module</h3>
 
 <p>I have a module, such as a css file. The page initially use these module, however, we want
-	to allow user swap the old module with a new module.</p>
+	to allow user swap the old module with a new module. The swap means the old module is unloaded
+	first, and the new module is loaded.
+</p>
 
 <h4>Solution 1: change the url of module dynamically</h4>
 
-<p></p>
+<p>When a module is loaded, the change of the url will unload the resource at old url,
+	and the module at the new url will be loaded. Here is the <a
+		href="../sample/stepbystep/step07-switch-module-dyanmically-by-changing-url/main.html">
+		sample file</a></p>
+
+<pre class="brush:javascript">
+	$( "#btnSwitchStyle" ).toggle( function() {
+			matrix.url( "main.css", "main2.css" );
+		}, function() {
+			matrix.url( "main.css", "main1.css" );
+	} );
+</pre>
+
+<h4>Solution 2: change dependencies of of a module</h4>
+
+<p>When a module is loaded, and later the dependencies change, matrix.js will unload the
+	module first, and and update new dependencies, and try to load it again. Here is an
+	<a href="../sample/stepbystep/step08-swtch-resource-dynamically-by-changing-dependencies/main.html">
+		example
+	</a></p>
+
+<pre class="brush:javascript">
+	$( "#btnSwitchStyle" ).toggle( function() {
+			matrix.require( "css.pack", "main2.css" );
+		}, function() {
+			matrix.require( "css.pack", "main1.css" );
+		} );
+</pre>
+
+
+
 <pre class="brush:javascript">
 
 </pre>
