@@ -12,7 +12,7 @@
 	var removeHash = matrix.debug.removeHash;
 	//#end_debug
 
-	var setLoader = matrix.loader.set,
+	var addLoader = matrix.loader.set,
 
 		//if yo have code like the following in javascript,
 		//the part delete window.depend2 will be extracted
@@ -165,13 +165,13 @@
 	} );
 
 	//a special module which is a package of modules, like a container
-	setLoader( "pack", {
+	addLoader( "pack", {
 		load: matrix.loader.resolveDependencies( $.noop ),
 		url: "moduleId"
 	} );
 
 	//js adapter try to parse the content of js file
-	setLoader( "js", {
+	addLoader( "js", {
 		load: {
 			staticLoaded: "hasScriptTag",
 			crossSiteLoad: "getScript",
@@ -185,12 +185,12 @@
 		fileExt: "js"
 	} );
 
-	setLoader( "loader", "js", {
+	addLoader( "loader", "js", {
 		url: "folder"
 	} );
 
 	//css adapter tries to parse the content of css file
-	setLoader( "css", {
+	addLoader( "css", {
 		load: {
 			staticLoaded: "hasCssLinkTag",
 			crossSiteLoad: "linkCss",
@@ -201,7 +201,7 @@
 		fileExt: "css"
 	} );
 
-	setLoader( "image", {
+	addLoader( "image", {
 		load: "cacheImage",
 		noRefCount: true
 	} );
