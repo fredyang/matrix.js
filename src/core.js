@@ -1011,18 +1011,18 @@ jQuery.Deferred && (function( $, undefined ) {
 	}
 
 	$( function() {
-		var $script = $( "script[profile]" ).first();
+		var $script = $( "script[data-profile]" ).first();
 		if ($script.length) {
-			var hash = $script.attr( "hash" );
+			var hash = $script.attr( "data-hash" );
 			if (hash) {
 				var parts = hash.split( "," );
 				matrix.hash( parts[0] == "true" ? true : parts[0], parts[1] );
 			}
-			var baseUrl = $script.attr( "baseUrl" );
+			var baseUrl = $script.attr( "data-baseUrl" );
 			if (baseUrl) {
 				matrix.baseUrl = baseUrl;
 			}
-			matrix( $script.attr( "profile" ) );
+			matrix( $script.attr( "data-profile" ) );
 		}
 	} );
 
