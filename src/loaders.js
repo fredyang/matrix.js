@@ -207,7 +207,7 @@
 	} );
 
 	//make img linker can handle module with these file extension
-	matrix.loader.handleFileTypes( "image", "jpg,png,bmp,gif" );
+	matrix.loader.mapFileExtsToLoader( "jpg,png,bmp,gif", "image" );
 	//fred test
 
 })( jQuery );

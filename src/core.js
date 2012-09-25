@@ -809,7 +809,7 @@ jQuery.Deferred && (function( $, undefined ) {
 			],
 			//if you want to load a file "*.jpg", which should be loaded
 			//with "*.img" loader you should specify matrix.loader.mapFiles("img", "jpg");
-			handleFileTypes: function( loaderName, fileExtensions ) {
+			mapFileExtsToLoader: function( fileExtensions, loaderName ) {
 				fileExtensions = splitByComma( fileExtensions );
 				for (var i = 0; i < fileExtensions.length; i++) {
 					loaderMapper[fileExtensions[i]] = loaderName;
