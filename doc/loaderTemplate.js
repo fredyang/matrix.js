@@ -39,7 +39,13 @@
 		//when promise is failed
 		fail: function( moduleId ) {
 
-		}
+		},
+
+		//this is optional
+		//it is necessary when we use file name to calcualate url,
+		// and the loader name is different from extension of
+		//of physical file name
+		fileExt: "file extension"
 	} );
 
 	matrix.loader.set( "loaderWithLoadPipeline", {
@@ -117,7 +123,13 @@
 		//when promise is failed
 		fail: function( moduleId ) {
 
-		}
+		},
+
+		//this is optional
+		//it is necessary when we use file name to calcualate url,
+		// and the loader name is different from extension of
+		//of physical file name
+		fileExt: "file extension"
 
 	} );
 
