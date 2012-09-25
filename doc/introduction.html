@@ -128,7 +128,8 @@
 /*
 	<@require>
 	localization.js, module1.css
-	</@require>
+	</
+@require>
 */
 $( "#btnOk" ).attr( "disabled", false ).click( function() {
 $( "&lt;h1 class='mymodule'&gt;" + message + "&lt;/h1&gt;" ).appendTo( "body" );
@@ -156,12 +157,27 @@ $( "&lt;h1 class='mymodule'&gt;" + message + "&lt;/h1&gt;" ).appendTo( "body" );
 		} );
 	</pre>
 
-<h4>Solution 3: Specify dependencies in profile.js using matrix.require</h4>
+<h4>Solution 3: Specify dependencies in using matrix.require</h4>
 
-<p>You don't want modify the original module source file. You can specify it in a profile.js for
-matrix.js
+<p>If you want to centralize the dependencies management to a single file you can use "matrix.require",
+	so that you don't need to specify dependencies in each module files.
+	Here is the <a href="05-load-dependencies-using-matrix.require/main.html">source</a>.
 </p>
 
+<pre class="brush:html">
+	&lt;script src="modules/profile.js"&gt;&lt;/script&gt;
+	&lt;script type="text/javascript"&gt;
+		matrix.baseUrl = "modules/"
+		matrix( "module1.js" );
+	&lt;/script&gt;
+</pre>
+
+<pre class="brush:javascript">
+	//profile.js
+	matrix.require({
+		"module1.js": "localization.js, module1.css"
+	});
+</pre>
 
 
 <h3>Problem: Too many http round trips</h3>

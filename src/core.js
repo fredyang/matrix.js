@@ -736,6 +736,7 @@ jQuery.Deferred && (function( $, undefined ) {
 			//matrix.set(loaderName, loaderDefinition);
 			//matrix.set(loaderName, baseloaderName, loaderDefinition);
 			set: function( loaderName, baseloaderName, loaderDefinition ) {
+
 				if (typeof baseloaderName !== "string") {
 					loaderDefinition = baseloaderName;
 					baseloaderName = null;
