@@ -117,7 +117,7 @@
 	together.
 </p>
 
-<h4>Solution 1: Specify depenencies using annotations</h4>
+<h4>Solution 1: Specify depenencies inside of module file using annotations</h4>
 
 <p>In this solution, we put some annotation to the header of the module files which
 	record the depedencies. Adding annotatio to the source file has least impact on the
@@ -137,7 +137,7 @@ $( "&lt;h1 class='mymodule'&gt;" + message + "&lt;/h1&gt;" ).appendTo( "body" );
 </pre>
 
 <h4>
-	Solution 2: Specify dependencies using api.
+	Solution 2: Specify dependencies inside of module file using api.
 </h4>
 
 <p>In previous solution, if the source file is located in a cross-site domain, current browser
@@ -157,9 +157,13 @@ $( "&lt;h1 class='mymodule'&gt;" + message + "&lt;/h1&gt;" ).appendTo( "body" );
 		} );
 	</pre>
 
-<p>
+<h4>Solution 3: Specify dependencies in profile.js using matrix.depends</h4>
 
+<p>You don't want modify the original module source file. You can specify it in a profile.js for
+matrix.js
 </p>
+
+
 
 <h3>Problem: Too many http round trips</h3>
 
