@@ -12,15 +12,15 @@
 <script src="../../../download/matrix.debug.js"></script>
 <script type="text/javascript">
 	matrix.baseUrl = "asset/";
-	matrix.url( "main.css", "style1.css" );
+	matrix.url( "main.css", "main1.css" );
 	matrix( "message.js" ).done( function() {
 		$( "body" ).append( "<h1>" + message + "</h1>" );
 	} );
 
 	$( "#btnSwitchStyle" ).toggle( function() {
-		matrix.url( "main.css", "style2.css" );
+		matrix.url( "main.css", "main2.css" );
 	}, function() {
-		matrix.url( "main.css", "style1.css" );
+		matrix.url( "main.css", "main1.css" );
 	} );
 
 </script>

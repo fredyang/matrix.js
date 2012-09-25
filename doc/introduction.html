@@ -159,7 +159,8 @@ $( "&lt;h1 class='mymodule'&gt;" + message + "&lt;/h1&gt;" ).appendTo( "body" );
 
 <h4>Solution 3: Specify dependencies in using matrix.require</h4>
 
-<p>If you want to centralize the dependencies management to a single file you can use "matrix.require",
+<p>If you want to centralize the dependencies management to a single file you can use
+	"matrix.require",
 	so that you don't need to specify dependencies in each module files.
 	Here is the <a href="05-load-dependencies-using-matrix.require/main.html">source</a>.
 </p>
@@ -294,6 +295,80 @@ matrix.define( "localization.js", function() {
 		window.bye = "bye!";
 	});
 </pre>
+
+<h3>Problem: Module package</h3>
+
+<p>I have a group of relative modules, I want to logically package them into a group, however
+	these modules are not necessarily combined in a physical file. So that when I call load the
+	package, all the modules of it will be loaded.
+</p>
+
+<h4>Solution</h4>
+
+<!--<p>The handler for a module id is usually associated with the extension of the module id, for example
+	module "hello.js" is associate with "js" loader. However it is not necessary the case.
+</p>-->
+
+<p>We can use the pack module to group them. In matrix.js, there are a couple built-in loader, such
+	as "js" loader, "css" loader. "pack" is another special loader which serve as the container of
+	other resource. A package module can also include other module. To define its content, we can
+	use "matrix.require". The follwing is the <a
+		href="../sample/stepbystep/step06-use-package-to-group-module">sample code</a>
+</p>
+
+<pre class="brush:javascript">
+	matrix.require( "main.pack", "greeting.js, name.js" )
+	matrix( "main.pack" ).done( function() {
+		$( "body" ).append( "&lt;h1&gt;" + greeting + "," + name + "&lt;/h1&gt;" );
+	} );
+</pre>
+
+<h3>Problem: Module url management</h3>
+
+<p>Normally, we have different modules in different location. Some reside in CDN, some resides in
+	folders of some kind structures.
+</p>
+
+<h4>Solution</h4>
+
+<p>If the module id is absolute url like the following. The id is will be used as the url</p>
+
+<pre class="brush:javascript">
+	matrix.load("http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js");
+</pre>
+
+<p>If your module id is just is in the format of "fileName.ext", its url is by default
+matrix.baseUrl + moduleId.
+</p>
+
+<pre class="brush:javascript">
+	&lt;script src="modules/profile.js"&gt;&lt;/script&gt;
+	&lt;script type="text/javascript"&gt;
+		matrix.baseUrl = "modules/"
+		//url will be modules/module1.js
+		matrix( "module1.js" );
+	&lt;/script&gt;
+</pre>
+
+<p>However, the url of module can be explicitly specified. For example</p>
+
+<pre class="brush:javascript">
+	matrix.url("jqueryui.js", "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js");
+	matrix("jqueryui.js");
+</pre>
+
+<h3>Problem: Switch module</h3>
+
+<p>I have a module, such as a css file. The page initially use these module, however, we want
+to allow user swap the old module with a new module.</p>
+
+<h4>Solution 1: change the url of module dynamically</h4>
+
+<p></p>
+<pre class="brush:javascript">
+
+</pre>
+
 </div>
 </body>
 </html>
