@@ -1,2 +1,6 @@
-var welcome = "welcome to matrix";
+matrix.define( "greeting.js", function() {
+	window.welcome = "welcome to matrix";
+} );
+
+
 

@@ -125,10 +125,10 @@
 </p>
 
 	<pre class="brush:javascript">
-		/*
-		 <@depends>
-		 localization.js, module1.css
-		 </
+/*
+	<@depends>
+	localization.js, module1.css
+	</
 @depends>
 */
 $( "#btnOk" ).attr( "disabled", false ).click( function() {
@@ -136,11 +136,11 @@ $( "&lt;h1 class='mymodule'&gt;" + message + "&lt;/h1&gt;" ).appendTo( "body" );
 } );
 </pre>
 
-<h3>
+<h4>
 	Solution 2: Specify dependencies using api.
-</h3>
+</h4>
 
-<p>In previous solution, if the source file is located in a cross-site server, current browser
+<p>In previous solution, if the source file is located in a cross-site domain, current browser
 	does not allow us to inspect the content of the source file. So that solution will not work.
 	In order to solve the problem, we can use matrix.define to rewrite the code in previous
 	solution. Here is the <a href="03-load-dependencies-use-api/main.html">source</a>.
@@ -161,9 +161,10 @@ $( "&lt;h1 class='mymodule'&gt;" + message + "&lt;/h1&gt;" ).appendTo( "body" );
 
 </p>
 
-<h3>Problem: I have lots of modules, each modules is in its own file, this create lots of HTTP
-	calls.
-</h3>
+<h3>Problem: Too many http round trips</h3>
+
+<p>I have lots of modules, each modules is in its own file, this create lots of HTTP
+	calls.</p>
 
 <h4>Solution 1: build tools combine files</h4>
 
@@ -191,11 +192,11 @@ matrix.define( "localization.js", function() {
 <h4>Solution 2: Use cache header</h4>
 
 <p>In this solution, we don't need combine the files. We still use the loose source file.
-	For the first time, there are lots http round trips. If we use proper http cache control
-	header, the second time visit of the web page, all the source file will be served locally.
+	For the first time, there are lots http round trips, this is acceptable the web page is
+	is single page application, take this installation process. If we use proper http cache control
+	header, the second visit of the web page, all the source file will be served locally.
 	There will be zero http call for these modules. Make sure the Cache-Control is infinitive
-	long, so that it will never expire virtually. So even you have lots of loose file, the
-	second request will be still very fast.
+	long, so that it will never expire virtually, like the following.
 </p>
 
 	<pre class="brush:javascript">
@@ -203,18 +204,22 @@ matrix.define( "localization.js", function() {
 		Last-Modified: Sun, 03 Apr 2011 14:34:43 GMT
 	</pre>
 
+<p>So even you have lots of loose file, the second request will be still very fast, like the
+	following image shows</p>
+
 <img src="image/cache.png" alt="cache"/>
 
-<h3>Problem: I want to client discade the cached copy of module files.</h3>
+<h3>Problem: I want to client discard the cached copy of module files.</h3>
 
 <p>In the previous solution, we set the cache-control header to a crazy large value, so that
-	it will never expired, but what if our update our module files?
+	it will never expired, but what if we update our module files andn now the client will not
+	be able to pick it up?
 </p>
 
 <h4>Solution</h4>
 
-<p>The solution is to change
-	the url by adding a small hash value, so that browser think that it is a new resource.</p>
+<p>The solution is to change the url by adding a small hash value, so that browser think that it is
+	a new resource.</p>
 
 	<pre class="brush:javascript">
 		//modules/module1.css?v=2
@@ -226,6 +231,50 @@ matrix.define( "localization.js", function() {
 		matrix.hash(true);
 	</pre>
 
+<h3>Problem: Statically loaded module mixed with on-demand-load module</h3>
+
+<p>I have use built-tool to combine some module into a file and preloaded, however some modules is
+	loaded on demand, will there be conflict?</p>
+
+<h4>Solution</h4>
+
+<p>As long as you use matrix.define method to define your module, it doesn't matter whether you
+	load them statically using script tag or load them on demand using matrix.js. In the following
+	sample, name
+</p>
+
+<pre class="brush:html">
+	&lt;!--statically load bye.js--&gt;
+	&lt;script src="modules/bye.js"&gt;&lt;/script&gt;
+	&lt;script type="text/javascript"&gt;
+		matrix.baseUrl = "modules/"
+		matrix( "module1.js" );
+	&lt;/script&gt;
+</pre>
+
+
+<pre class="brush:javascript">
+	//in module1.js
+	matrix.define(
+			"module1.js", //current module id
+			"localization.js, module1.css, bye.js", //depenencies
+			function() {
+				$( "#btnOk" ).attr( "disabled", false ).click( function() {
+					$( "&lt;h1 class='mymodule'&gt;" + message + bye + "&lt;/h1&gt;" ).appendTo( "body" );
+				} );
+			} );
+
+		matrix.define( "localization.js", function() {
+			window.message = "hello world!";
+		} );
+</pre>
+
+<pre class="brush:javascript">
+	//in bye.js
+	matrix.define("bye.js", function () {
+		window.bye = "bye!";
+	});
+</pre>
 </div>
 </body>
 </html>
