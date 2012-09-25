@@ -1,13 +1,17 @@
 (function( $ ) {
 
-	matrix.loader.set( "loaderWithLoadFunction", {
+	matrix.loader.set( "loaderName", "baseLoaderName", {
+
 		//mandatory
 		//load is function
 		load: function( moduleId ) {
-			//your can return a promise object
-			//but make sure to defer.resolve(moduleId, optionalResult)
+			//if you can return the module immediately
+			//return it now , return module
 			//
-			//or return optionalResult
+			//if not, your can return a promise object
+			//
+			//in your processing code make sure
+			// to defer.resolve(moduleId, module) later
 		},
 
 		//optional
@@ -22,6 +26,7 @@
 		},
 
 		//optional
+		//get the depedencies of a moduleId
 		require: function( moduleId ) {
 			//return a resourceString or resourceArray
 			//return "a.html, b.js";
@@ -48,20 +53,13 @@
 		fileExt: "file extension"
 	} );
 
-	matrix.loader.set( "loaderWithLoadPipeline", {
+	matrix.loader.set( "loaderName", "baseloaderName", {
 		//mandatory
 		//load is pipeline object
 		load: {
-			//the other missing load task will be filled by default value in buildLoadFnWithFilters
-			/*
-			 var staticLoaded = filters.staticLoaded || loadFilters.staticLoaded.returnFalse,
-			 getSource = filters.getSource || loadFilters.getSource.getTextByAjax,
-			 compile = filters.compile,
-			 crossSiteLoad = filters.crossSiteLoad,
-			 buildDependencies = filters.buildDependencies,
-			 buildUnload = filters.buildUnload;
-			 */
+
 			//optional
+			//determine whether moduleId is staticalLoaded
 			staticLoaded: function( moduleId ) {
 				return true;
 			},
@@ -73,9 +71,10 @@
 			},
 
 			//optional if all your resource is local
+			//if your resource can be cross site you need to implement this
 			//return a promise
 			crossSiteLoad: function( moduleId ) {
-
+				//return promise
 			},
 
 			//optional
