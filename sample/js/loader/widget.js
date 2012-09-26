@@ -6,18 +6,14 @@
 		//used to extract "xxx" in jquery.ui.xxx.js
 		rWidgetFileName = /jquery\.ui\.(\w+?)\.js/gi;
 
+	//a widget module is a group of js, css files
+	//this js, css has its own url conventions
+	//here we create a widget loader which inherite from pack loader
 	matrix.loader.set( "widget", "pack", {
-		// widgetName.widget always require on the following
+		// xxx.widget always require on the following
 		//
-		// widgetName.widget_js,
+		// xxx.widget_js,
 		// core.widget_css,
-		// ui_theme.pack
-		//
-		// for example
-		// dialog.widget require on
-		//
-		// dialog.widget_js
-		// core.widget_css
 		// ui_theme.pack
 		//
 		//ui_theme.pack is container for actaul theme
@@ -28,29 +24,30 @@
 		}
 	} );
 
-	matrix.loader.set( "widget_js", "js", {
+	//You don't need inherite "js", becuase it is by default
+	matrix.loader.set( "widget_js", {
+
 		load: {
 
 			//return null means there is no dependency
 			buildDependencies: function( moduleId, sourceCode ) {
 				var dependencies = [],
 					widgetFileName,
-					dependText = rdependencies.exec( sourceCode );
+					dependenciesAnnotation = rdependencies.exec( sourceCode );
 
-				if (dependText = dependText && dependText[1]) {
-					//dependText is something like
+				if (dependenciesAnnotation = dependenciesAnnotation && dependenciesAnnotation[1]) {
+					//dependenciesAnnotation is something like
 					/*
 					 *	jquery.ui.core.js
 					 *	jquery.ui.widget.js
 					 */
-					while (widgetFileName = rWidgetFileName.exec( dependText )) {
+					while (widgetFileName = rWidgetFileName.exec( dependenciesAnnotation )) {
 						//convert jquery.ui.xxx.js to xxx.widget_js
 						dependencies.push( widgetFileName[1] + ".widget_js" );
 					}
-					return dependencies.length ? dependencies.toString() : null;
 				}
 
-				return null;
+				return dependencies.length ? dependencies.toString() : null;
 			}
 
 		},
@@ -61,7 +58,8 @@
 
 		require: function( moduleId ) {
 			var widgetName = matrix.fileName( moduleId );
-			//draggable,droppable,mouse,position,sortable,widget does not have a css
+			//if widget is not one of draggable,droppable,mouse,position,sortable,widget
+			//it has a css file
 			if ("draggable,droppable,mouse,position,sortable,widget".indexOf( widgetName ) == -1) {
 				return widgetName + ".widget_css";
 			}
@@ -69,7 +67,8 @@
 
 	} );
 
-	//use convention to find widget css
+	//widget's css is placed and named according to a convention,
+	//we can use this convention to calcuate the url of a widget
 	matrix.loader.set( "widget_css", "css", {
 		url: function( moduleId ) {
 			var widgetName = matrix.fileName( moduleId );
@@ -77,7 +76,8 @@
 		}
 	} );
 
-	//use convention to find theme css
+	//theme's css is placed and named according to a convention,
+	//we can use this convention to calcuate the url of a theme
 	matrix.loader.set( "ui_theme", "css", {
 		url: function( moduleId ) {
 			var themeName = matrix.fileName( moduleId );
@@ -85,7 +85,9 @@
 		}
 	} );
 
-	//no_theme is the default theme
+	//the ui_theme.pack by default depends on smoothness.ui_theme
+	//In other words, default ui theme is smoothness
+	//we can change the dependencies to change the theme
 	matrix.require( "ui_theme.pack", "smoothness.ui_theme" );
 
 })( jQuery, matrix );

@@ -212,7 +212,8 @@ matrix.define( "localization.js", function() {
 
 <p>In this solution, we don't need combine the files. We still use the loose source file.
 	For the first time, there are lots http round trips, this is acceptable the web page is
-	is single page application, take this installation process. If we use proper http cache control
+	is single page application, take this as installation process. If we use proper http cache
+	control
 	header, the second visit of the web page, all the source file will be served locally.
 	There will be zero http call for these modules. Make sure the Cache-Control is infinitive
 	long, so that it will never expire virtually, like the following.
@@ -364,7 +365,7 @@ matrix.define( "localization.js", function() {
 
 <p>matrix.js is a general purpose module loading system, it can be extended to load new modules
 	as long as the modules can be consumed by browser. The following is the template code
-	to create a new module, these is a bit overwhelming, but most of them are optional, and
+	to create a new module, these might be overwhelming, but most of them are optional, and
 	you can inherite the missing member from base loader.
 </p>
 
@@ -424,7 +425,7 @@ matrix.define( "localization.js", function() {
 </pre>
 
 
-<p>Now lets build a image loader. And there is the code. And we use the loader in this <a
+<p>The following code is all is need to build a image loader. And we use the loader in this <a
 	href="../sample/advanced/load_images-album.html">photo album sample</a></p>
 
 <pre class="brush:javascript">
@@ -456,15 +457,15 @@ matrix.define( "localization.js", function() {
 	mapFileExtsToLoader method solve this problem.
 </p>
 
-<p>This loader has been included in the library. Here just shows we can take to create a load
-	function for a loader.
+<p>This loader has been included in the library. Here is just to shows how to create a loader with
+	load function.
 </p>
 
 <h4>Solution 2: create a new loader with load pipeline</h4>
 
-<p>The "load" memeber of a loader can be also a pipeline object like the following. Basically,
-	via.js treat the load process as pipeline which combine serveral tasks. But only either
-	compile or crossSiteLoad is required.
+<p>The "load" member of a loader can be also a pipeline object like the following. Basically,
+	via.js treat the load process as pipeline which combine serveral tasks. But you only need
+	to implement compile or crossSiteLoad method.
 </p>
 
 <pre class="brush:javascript">
@@ -546,8 +547,10 @@ matrix.define( "localization.js", function() {
 </pre>
 
 <p>Here we use a pipeline object as loader, it implement the staticLoaded, compile.
-	Please note that this loader depends on jquery.tmpl.js. After this, we can use
-	template loader liekt the following.</p>
+	Please note that this loader depends on jquery.tmpl.js, this dependencies will be automatically
+	loaded. Now we can load external template by using the <a
+		href="../sample/stepbystep/step09-create-new-resource-by-new-loader/main.html">following
+		code</a>.</p>
 
 <pre class="brush:javascript">
 	matrix( "main.tmpl" ).done( function() {
@@ -579,22 +582,25 @@ matrix.define( "localization.js", function() {
 
 <h3>Problem: I have loaded a module, but can I unload it when it is no longer used.</h3>
 
-<p>This is very common problem. We load a widget and use it for a while and close it, but it
-	still stay in memory. If we continue like this, our Single Page Application will be using
-	more and more memory.</p>
+<p>This is very common problem. We load a widget and use it for a while and close it remove it from
+	DOM, but it definition still stay in memory. If we continue like this, our Single Page
+	Application will be using more and more memory. To be able to remove the module completely,
+	is important for a long running Single Page Application.
+</p>
 
 
 <h4>Solution 1: Define unload logic using annotation.</h4>
 
-<p>Matrix.js only only support loading module, it also support unloading module. In the
+<p>Matrix.js not only support loading module, it also support unloading module. In the
 	<a href="../sample/stepbystep/step11-unload-resource-using-annotations/main.html">following</a>
-	We will add the unloading logic as annotations. This is good existing code. And you don't want
-	to modify them. However, annotation does not work for cross-site resource.
+	We will add the unloading logic as annotations. This is good third party code code, and you
+	don't want to modify them. However, annotation does not work for cross-site resource.
 </p>
 
 <pre class="brush:javascript">
 	matrix( "main.js" );
 	//
+	//this will call the unload logic embedded in the "unload" annotation
 	matrix.unload( "main.js" );
 </pre>
 <pre class="brush:javascript">
@@ -637,6 +643,7 @@ matrix.define( "localization.js", function() {
 <pre class="brush:javascript">
 	//in main.js
 	matrix.define( "main.js",
+		//load function for the module
 		function() {
 			(function( $ ) {
 
@@ -655,6 +662,7 @@ matrix.define( "localization.js", function() {
 			})( window );
 
 		},
+		//unload function for the module
 		function() {
 			dummy = null;
 			delete window.dummy;
@@ -670,7 +678,7 @@ matrix.define( "localization.js", function() {
 
 <h4>Solution 1: change the url of module dynamically</h4>
 
-<p>When a module is loaded, the change of the url will unload the resource at old url,
+<p>When a module is loaded, changing the url of a module will unload the resource at old url,
 	and the module at the new url will be loaded. Here is the <a
 		href="../sample/stepbystep/step07-switch-module-dyanmically-by-changing-url/main.html">
 		sample file</a></p>
@@ -700,10 +708,6 @@ matrix.define( "localization.js", function() {
 </pre>
 
 
-
-<pre class="brush:javascript">
-
-</pre>
 
 </div>
 </body>
