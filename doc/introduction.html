@@ -220,8 +220,8 @@ matrix.define( "localization.js", function() {
 </p>
 
 	<pre class="brush:javascript">
-		Cache-Control: max-age=999999999
-		Last-Modified: Sun, 03 Apr 2011 14:34:43 GMT
+		Cache-Control: max-age=315360000
+		Expires: Fri, 01 May 2020 03:47:24 GMT
 	</pre>
 
 <p>So even you have lots of loose file, the second request will be still very fast, like the
@@ -707,7 +707,46 @@ matrix.define( "localization.js", function() {
 		} );
 </pre>
 
+<h3>Problem: I don't want to manually map my module id to a url</h3>
 
+<p>We can use matrix.url to specify the url for a module id, but if the module is placed
+and named according to a convention, we can automatically generate the url for that.</p>
+
+<h4>Solution: create new loader for that.</h4>
+
+<p>In the following, jQuery UI widget's css is placed based on a convention, like the following.
+</p>
+
+<pre class="brush:javascript">
+	matrix.loader.set( "widget_css", "css", {
+		url: function( moduleId ) {
+			var widgetName = matrix.fileName( moduleId );
+			return matrix.baseUrl + "jquery.ui/css/base/jquery.ui." + widgetName + ".css";
+		}
+	} );
+
+	//this will load css at {matrix.baseUrl}/jquery.ui/css/base/jquery.ui.dialog.css";
+	matrix("dialog.widget_css");
+</pre>
+
+<h3>Problem: I don't want to manually manage dependencies of the modules</h3>
+
+<p>If I have a widget x.js, it always requires on a x.tmpl, and x.css, I don't
+want to repeat myself.</p>
+
+<h4>Solution: create a loader to manage dependencies automatically.</h4>
+
+<pre class="brush:javascript">
+	matrix.loader.set( "widget", "js", {
+		require: function( moduleId ) {
+			var widgetName = matrix.fileName( moduleId );
+			return widgetName + ".tmpl," + widgetName + ".css";
+		}
+	} );
+
+	//it will automatically load x.tmpl, and x.css
+	matrix.load("x.widget");
+</pre>
 
 </div>
 </body>
