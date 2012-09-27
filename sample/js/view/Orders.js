@@ -11,7 +11,7 @@
 		$dialog.dialog();
 	} );
 	viewStore.Orders = {
-		release: function () {
+		release: function() {
 			$dialog.remove();
 		},
 		content: $content

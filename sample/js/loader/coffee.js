@@ -1,6 +1,6 @@
 /*
  <@require>
-ref/coffee-script.js
+ ref/coffee-script.js
  </@require>
  * */
 
