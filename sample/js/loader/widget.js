@@ -24,8 +24,7 @@
 		}
 	} );
 
-	//You don't need inherite "js", becuase it is by default
-	matrix.loader.set( "widget_js", {
+	matrix.loader.set( "widget_js", "js", {
 
 		load: {
 

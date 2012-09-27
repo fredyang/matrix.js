@@ -174,7 +174,7 @@
 	addLoader( "js", {
 		load: {
 			//the following are by default
-			//staticLoaded: "hasScriptTag",
+			staticLoaded: "hasScriptTag"
 			//crossSiteLoad: "getScript",
 			//getSource: "getTextByAjax",
 			//compile: "globalEval",
