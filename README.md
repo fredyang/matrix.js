@@ -7,7 +7,7 @@ Get started
 
 <a href="http://code.semanticsworks.com/matrix.js/sample/index.html">Demos</a>
 
-<a href="http://code.semanticsworks.com/matrix.js/test/index.html">Unit test</a>
+<a href="http://code.semanticsworks.com/matrix.js/tests/index.html">Unit test</a>
 
 
 How to build your own matrix.js
