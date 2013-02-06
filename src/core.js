@@ -17,7 +17,7 @@ jQuery.Deferred && (function( $, undefined ) {
 		loaderCommands,
 		loadFilters,
 		require,
-		//match "http://domain.com" , "/jkj"
+	//match "http://domain.com" , "/jkj"
 		rAbsoluteUrl = /^http[s]?:\/\/|^\//,
 		rUrl = /^([\w\+\.\-]+:)(?:\/\/([^\/?#:]*)(?::(\d+))?)?/,
 		ajaxLocParts = rUrl.exec( location.href.toLowerCase() ) || [],
@@ -30,11 +30,11 @@ jQuery.Deferred && (function( $, undefined ) {
 		arrayPrototype = Array.prototype,
 		loaderFinders,
 		loaderMapper = {},
-		//for parallel loading
-		// matrix([holdReady,] moduleIdString, loadByOrder)
-		//
-		//for serial loading and mixed serial/parallel loading strategy
-		// matrix([holdReady,] moduleIdArray)
+	//for parallel loading
+	// matrix([holdReady,] moduleIdString, loadByOrder)
+	//
+	//for serial loading and mixed serial/parallel loading strategy
+	// matrix([holdReady,] moduleIdArray)
 		matrix = window.matrix = function( holdReady, moduleIds, loadByOrder ) {
 			var rtnPromise;
 			if (typeof holdReady !== "boolean") {
@@ -334,7 +334,7 @@ jQuery.Deferred && (function( $, undefined ) {
 		return isCrossDomain( urlRelativeToBaseUrl ) ? dummyLink.href : addHash( dummyLink.href );
 	}
 
-	function convertPiplelineToLoadFunction ( pipeline ) {
+	function convertPipelineToLoadFunction ( pipeline ) {
 
 		for (var key in pipeline) {
 			attachFilter( pipeline, key );
@@ -697,6 +697,7 @@ jQuery.Deferred && (function( $, undefined ) {
 		},
 
 		//the url relative to the current window location, for example "js/"
+		//the suffix "/" is important
 		//it is used to calculate the real relative url of resource key
 		baseUrl: "",
 
@@ -755,7 +756,7 @@ jQuery.Deferred && (function( $, undefined ) {
 
 				if ($.isPlainObject( loader.load )) {
 					//it is a pipeline, but not a function
-					loader.load = convertPiplelineToLoadFunction( loader.load );
+					loader.load = convertPipelineToLoadFunction( loader.load );
 				}
 
 				if (!$.isFunction( loader.load )) {
@@ -1014,22 +1015,6 @@ jQuery.Deferred && (function( $, undefined ) {
 			filters[filterName] = loadFilters[filterName][filters[filterName]];
 		}
 	}
-
-	$( function() {
-		var $script = $( "script[data-profile]" ).first();
-		if ($script.length) {
-			var hash = $script.attr( "data-hash" );
-			if (hash) {
-				var parts = hash.split( "," );
-				matrix.hash( parts[0] == "true" ? true : parts[0], parts[1] );
-			}
-			var baseUrl = $script.attr( "data-baseUrl" );
-			if (baseUrl) {
-				matrix.baseUrl = baseUrl;
-			}
-			matrix( $script.attr( "data-profile" ) );
-		}
-	} );
 
 	//#debug
 	matrix.debug = {

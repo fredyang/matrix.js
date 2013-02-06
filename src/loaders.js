@@ -107,7 +107,11 @@
 		getSource: {
 			//this is default getSource method
 			getTextByAjax: function( moduleId ) {
-				return $.get( matrix.url( moduleId ), null, null, "text" );
+				return $.ajax( {
+					url: matrix.url( moduleId ),
+					dataType: "text",
+					cache: true
+				} );
 			}
 		},
 
