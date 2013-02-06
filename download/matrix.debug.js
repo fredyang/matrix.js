@@ -1,9 +1,9 @@
 /*!
- * matrix.js JavaScript Library v0.4pre
+ * matrix.js JavaScript Library v0.31pre
  * © Fred Yang - http://semanticsworks.com
  * License: MIT (http://www.opensource.org/licenses/mit-license.php)
  *
- * Date: Mon Sep 24 13:18:12 2012 -0400
+ * Date: Wed Feb 6 10:00:24 2013 -0500
  */
 jQuery.Deferred && (function( $, undefined ) {
 
@@ -23,8 +23,8 @@ jQuery.Deferred && (function( $, undefined ) {
 		fileName,
 		loaderCommands,
 		loadFilters,
-		depends,
-		//match "http://domain.com" , "/jkj"
+		require,
+	//match "http://domain.com" , "/jkj"
 		rAbsoluteUrl = /^http[s]?:\/\/|^\//,
 		rUrl = /^([\w\+\.\-]+:)(?:\/\/([^\/?#:]*)(?::(\d+))?)?/,
 		ajaxLocParts = rUrl.exec( location.href.toLowerCase() ) || [],
@@ -37,11 +37,11 @@ jQuery.Deferred && (function( $, undefined ) {
 		arrayPrototype = Array.prototype,
 		loaderFinders,
 		loaderMapper = {},
-		//for parallel loading
-		// matrix([holdReady,] moduleIdString, loadByOrder)
-		//
-		//for serial loading and mixed serial/parallel loading strategy
-		// matrix([holdReady,] moduleIdArray)
+	//for parallel loading
+	// matrix([holdReady,] moduleIdString, loadByOrder)
+	//
+	//for serial loading and mixed serial/parallel loading strategy
+	// matrix([holdReady,] moduleIdArray)
 		matrix = window.matrix = function( holdReady, moduleIds, loadByOrder ) {
 			var rtnPromise;
 			if (typeof holdReady !== "boolean") {
@@ -133,7 +133,7 @@ jQuery.Deferred && (function( $, undefined ) {
 
 				//create dependency in order
 				while (i < keys.length) {
-					depends( keys[i], keys[i - 1] );
+					require( keys[i], keys[i - 1] );
 					i++;
 				}
 				moduleIds = keys[keys.length - 1];
@@ -341,18 +341,18 @@ jQuery.Deferred && (function( $, undefined ) {
 		return isCrossDomain( urlRelativeToBaseUrl ) ? dummyLink.href : addHash( dummyLink.href );
 	}
 
-	function buildLoadFnWithFilters ( filters ) {
+	function convertPipelineToLoadFunction ( pipeline ) {
 
-		for (var key in filters) {
-			attachFilter( filters, key );
+		for (var key in pipeline) {
+			attachFilter( pipeline, key );
 		}
 
-		var staticLoaded = filters.staticLoaded || loadFilters.staticLoaded.returnFalse,
-			getSource = filters.getSource || loadFilters.getSource.getTextByAjax,
-			compile = filters.compile,
-			crossSiteLoad = filters.crossSiteLoad,
-			buildDependencies = filters.buildDependencies,
-			buildUnload = filters.buildUnload;
+		var staticLoaded = pipeline.staticLoaded || loadFilters.staticLoaded.returnFalse,
+			getSource = pipeline.getSource || loadFilters.getSource.getTextByAjax,
+			compile = pipeline.compile || loadFilters.compile.globalEval,
+			crossSiteLoad = pipeline.crossSiteLoad || loadFilters.crossSiteLoad.getScript,
+			buildDependencies = pipeline.buildDependencies || loadFilters.buildDependencies.parseRequireTag,
+			buildUnload = pipeline.buildUnload || loadFilters.buildUnload.parseUnloadTag;
 
 		if (!compile && !crossSiteLoad) {
 			throw "module loader must implement at least one of compile, crossSiteLoad";
@@ -431,7 +431,7 @@ jQuery.Deferred && (function( $, undefined ) {
 									//#debug
 									matrix.debug.log( "          dependencies found for " + moduleId + ":" + embeddedDependencies );
 									//#end_debug
-									depends( moduleId, embeddedDependencies );
+									require( moduleId, embeddedDependencies );
 								}
 							}
 
@@ -452,7 +452,7 @@ jQuery.Deferred && (function( $, undefined ) {
 								}, 5 );
 							};
 
-							var dependencies = depends( moduleId );
+							var dependencies = require( moduleId );
 
 							//load dependencies because it combines static dependentModuleString
 							//and dynamic dependentModuleString
@@ -554,7 +554,7 @@ jQuery.Deferred && (function( $, undefined ) {
 
 							//delete the promises associated with the module
 							accessPromise( moduleId, undefined );
-							dependencies = depends( moduleId );
+							dependencies = require( moduleId );
 							if (dependencies) {
 								matrix.unload( dependencies, remove );
 							}
@@ -635,12 +635,12 @@ jQuery.Deferred && (function( $, undefined ) {
 		// or can use loader.depend method to return dependentResourceString which is called
 		//dynamic dependentResourceString,
 		//or we can combind them together
-		depends: depends = function( moduleId, dependencies ) {
+		require: require = function( moduleId, dependencies ) {
 
 			if (typeof moduleId === "object") {
 				for (var key in moduleId) {
 					if (moduleId.hasOwnProperty( key )) {
-						depends( key, moduleId[key] );
+						require( key, moduleId[key] );
 					}
 				}
 				return;
@@ -652,8 +652,8 @@ jQuery.Deferred && (function( $, undefined ) {
 					var staticDepencencies = dependencyStore[moduleId];
 					var loader = findLoader( moduleId );
 
-					if (loader && loader.depends) {
-						var dynamicDependencies = loader.depends( moduleId );
+					if (loader && loader.require) {
+						var dynamicDependencies = loader.require( moduleId );
 						if (dynamicDependencies && staticDepencencies) {
 							return dynamicDependencies + "," + staticDepencencies;
 						} else if (dynamicDependencies) {
@@ -672,7 +672,7 @@ jQuery.Deferred && (function( $, undefined ) {
 
 			} else if (dependencies === true) {
 				//for debugging purpuse matrix.depend(moduleId, true)
-				var moduleIds = depends( moduleId );
+				var moduleIds = require( moduleId );
 				moduleIds = moduleIds && splitByComma( moduleIds );
 				if (moduleIds) {
 					var rtn = [];
@@ -680,7 +680,7 @@ jQuery.Deferred && (function( $, undefined ) {
 						if (matrix.fileExt( moduleIds[i] ) !== "module") {
 							rtn.pushUnique( matrix.url( moduleIds[i] ) );
 						}
-						rtn.merge( depends( moduleIds[i], true ) );
+						rtn.merge( require( moduleIds[i], true ) );
 					}
 					return rtn;
 				}
@@ -704,6 +704,7 @@ jQuery.Deferred && (function( $, undefined ) {
 		},
 
 		//the url relative to the current window location, for example "js/"
+		//the suffix "/" is important
 		//it is used to calculate the real relative url of resource key
 		baseUrl: "",
 
@@ -726,7 +727,7 @@ jQuery.Deferred && (function( $, undefined ) {
 			resolveDependencies: function( actionAfterDependenciesResolved ) {
 				return function( moduleId ) {
 					var defer = $.Deferred(),
-						dependentResourceString = matrix.depends( moduleId );
+						dependentResourceString = matrix.require( moduleId );
 
 					if (dependentResourceString) {
 						matrix( dependentResourceString ).done( function() {
@@ -743,6 +744,7 @@ jQuery.Deferred && (function( $, undefined ) {
 			//matrix.set(loaderName, loaderDefinition);
 			//matrix.set(loaderName, baseloaderName, loaderDefinition);
 			set: function( loaderName, baseloaderName, loaderDefinition ) {
+
 				if (typeof baseloaderName !== "string") {
 					loaderDefinition = baseloaderName;
 					baseloaderName = null;
@@ -755,12 +757,13 @@ jQuery.Deferred && (function( $, undefined ) {
 
 				var loader = $.extend( true, {}, loaderDefinition );
 
-				$.each( "load,unload,url,depends".split( "," ), function() {
+				$.each( "load,unload,url,require".split( "," ), function() {
 					attachCommand( loader, this );
 				} );
 
 				if ($.isPlainObject( loader.load )) {
-					loader.load = buildLoadFnWithFilters( loader.load );
+					//it is a pipeline, but not a function
+					loader.load = convertPipelineToLoadFunction( loader.load );
 				}
 
 				if (!$.isFunction( loader.load )) {
@@ -791,7 +794,7 @@ jQuery.Deferred && (function( $, undefined ) {
 					//  return a url
 					// }
 				},
-				depends: {
+				require: {
 					//name: function (moduleId) {
 					// return a moduleIdString or moduleIdArray
 					// return "a.html, b.js"
@@ -799,6 +802,9 @@ jQuery.Deferred && (function( $, undefined ) {
 				}
 			},
 
+			//strategies to find the name of the loader based on moduleId
+			//the basic strategy is use the extension as the loader name
+			//however you can add your own strategis
 			finders: loaderFinders = [
 				//find loader by by file extensions directly
 				function( moduleId ) {
@@ -815,7 +821,7 @@ jQuery.Deferred && (function( $, undefined ) {
 			],
 			//if you want to load a file "*.jpg", which should be loaded
 			//with "*.img" loader you should specify matrix.loader.mapFiles("img", "jpg");
-			handleFileTypes: function( loaderName, fileExtensions ) {
+			mapFileExtsToLoader: function( fileExtensions, loaderName ) {
 				fileExtensions = splitByComma( fileExtensions );
 				for (var i = 0; i < fileExtensions.length; i++) {
 					loaderMapper[fileExtensions[i]] = loaderName;
@@ -891,7 +897,7 @@ jQuery.Deferred && (function( $, undefined ) {
 			promise.defer.dontResolve = true;
 
 			if (dependencies) {
-				depends( moduleId, dependencies );
+				require( moduleId, dependencies );
 				return matrix( dependencies ).done(
 					function() {
 						defineModule( moduleId, load, unload );
@@ -940,7 +946,7 @@ jQuery.Deferred && (function( $, undefined ) {
 	function getNewStaticDependencies ( moduleId, dependencieToSet ) {
 		var rtn,
 			loader = findLoader( moduleId ),
-			dynamicDependencies = loader && loader.depends && loader.depends( moduleId );
+			dynamicDependencies = loader && loader.require && loader.require( moduleId );
 
 		if (dynamicDependencies) {
 			rtn = [];
@@ -1017,22 +1023,6 @@ jQuery.Deferred && (function( $, undefined ) {
 		}
 	}
 
-	$( function() {
-		var $script = $( "script[profile]" ).first();
-		if ($script.length) {
-			var hash = $script.attr( "hash" );
-			if (hash) {
-				var parts = hash.split( "," );
-				matrix.hash( parts[0] == "true" ? true : parts[0], parts[1] );
-			}
-			var baseUrl = $script.attr( "baseUrl" );
-			if (baseUrl) {
-				matrix.baseUrl = baseUrl;
-			}
-			matrix( $script.attr( "profile" ) );
-		}
-	} );
-
 	//#debug
 	matrix.debug = {
 		fullUrl: fullUrl,
@@ -1073,7 +1063,7 @@ jQuery.Deferred && (function( $, undefined ) {
 	var removeHash = matrix.debug.removeHash;
 	//#end_debug
 
-	var setLoader = matrix.loader.set,
+	var addLoader = matrix.loader.set,
 
 		//if yo have code like the following in javascript,
 		//the part delete window.depend2 will be extracted
@@ -1084,11 +1074,11 @@ jQuery.Deferred && (function( $, undefined ) {
 		runloadStatement = /<@unload>([\w\W]+?)<\/@unload>/i,
 
 		//match string "ref2, ref1" in
-		/* <@depends>
+		/* <@require>
 		 ref2, ref1
-		 <@depends>
+		 <@require>
 		 */
-		rDependHeader = /<@depends>([\w\W]+?)<\/@depends>/i;
+		rDependHeader = /<@require>([\w\W]+?)<\/@require>/i;
 
 	$.extend( true, loaderCommands, {
 		load: {
@@ -1168,7 +1158,11 @@ jQuery.Deferred && (function( $, undefined ) {
 		getSource: {
 			//this is default getSource method
 			getTextByAjax: function( moduleId ) {
-				return $.get( matrix.url( moduleId ), null, null, "text" );
+				return $.ajax( {
+					url: matrix.url( moduleId ),
+					dataType: "text",
+					cache: true
+				} );
 			}
 		},
 
@@ -1218,57 +1212,58 @@ jQuery.Deferred && (function( $, undefined ) {
 			}
 		},
 		buildDependencies: {
-			parseDependsTag: function( moduleId, sourceCode ) {
-				var depends = rDependHeader.exec( sourceCode );
-				return (depends && depends[1] ) || null;
+			parseRequireTag: function( moduleId, sourceCode ) {
+				var require = rDependHeader.exec( sourceCode );
+				return (require && require[1] ) || null;
 			}
 		}
 	} );
 
 	//a special module which is a package of modules, like a container
-	setLoader( "pack", {
+	addLoader( "pack", {
 		load: matrix.loader.resolveDependencies( $.noop ),
 		url: "moduleId"
 	} );
 
 	//js adapter try to parse the content of js file
-	setLoader( "js", {
+	addLoader( "js", {
 		load: {
-			staticLoaded: "hasScriptTag",
-			crossSiteLoad: "getScript",
+			//the following are by default
+			staticLoaded: "hasScriptTag"
+			//crossSiteLoad: "getScript",
 			//getSource: "getTextByAjax",
-			compile: "globalEval",
-			buildDependencies: "parseDependsTag",
-			buildUnload: "parseUnloadTag"
+			//compile: "globalEval",
+			//buildDependencies: "parseRequireTag",
+			//buildUnload: "parseUnloadTag"
 		},
 		//this is necessary because if you have a sub loader inherite from
 		//from this, and you don't want to inherited sub loader to specify this again
 		fileExt: "js"
 	} );
 
-	setLoader( "loader", "js", {
+	addLoader( "loader", "js", {
 		url: "folder"
 	} );
 
 	//css adapter tries to parse the content of css file
-	setLoader( "css", {
+	addLoader( "css", {
 		load: {
 			staticLoaded: "hasCssLinkTag",
 			crossSiteLoad: "linkCss",
 			compile: "linkCss",
-			buildDependencies: "parseDependsTag"
+			buildDependencies: "parseRequireTag"
 		},
 		unload: "removeCssLinkTag",
 		fileExt: "css"
 	} );
 
-	setLoader( "image", {
+	addLoader( "image", {
 		load: "cacheImage",
 		noRefCount: true
 	} );
 
 	//make img linker can handle module with these file extension
-	matrix.loader.handleFileTypes( "image", "jpg,png,bmp,gif" );
+	matrix.loader.mapFileExtsToLoader( "jpg,png,bmp,gif", "image" );
 	//fred test
 
 })( jQuery );
