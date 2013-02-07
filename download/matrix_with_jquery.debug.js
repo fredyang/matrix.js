@@ -1,9 +1,9 @@
 /*!
- * matrix.js JavaScript Library v0.31pre
+ * matrix.js JavaScript Library v0.32
  * © Fred Yang - http://semanticsworks.com
  * License: MIT (http://www.opensource.org/licenses/mit-license.php)
  *
- * Date: Wed Feb 6 10:00:24 2013 -0500
+ * Date: Thu Feb 7 14:56:16 2013 -0500
  */
 this.matrix || (function() {
 
